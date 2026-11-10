@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rocodrom</title>
+<meta name="description" content="rocodrom: el juego de retos de escalada para jugar con tus amigos. Pon una vía, grábate y gana la liga de tu grupo. Gratis.">
+<meta property="og:title" content="rocodrom · retos de escalada con tus amigos">
+<meta property="og:description" content="Pon una vía. Que la suden tus amigos. Gratis para todo el grupo.">
+<meta name="theme-color" content="#E9EDF1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -130 200 270'%3E%3Cpath d='M-74,-72 L74,-72 C82,-72 88,-66 88,-56 L96,80 C96,106 78,120 52,120 L-52,120 C-78,120 -96,106 -96,80 L-88,-56 C-88,-66 -82,-72 -74,-72 Z' fill='%236F95C9'/%3E%3Ccircle cx='-30' cy='-96' r='34' fill='white'/%3E%3Ccircle cx='24' cy='-98' r='32' fill='white'/%3E%3Crect x='-94' y='-76' width='188' height='30' rx='15' fill='%234A6A98'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lilita+One&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --surface:#E9EDF1; --raised:#F6F8FA; --card:#FFFFFF; --ink:#1F2A3A; --muted:#556072;
+  --bag:#6F95C9; --bagShade:#577BAD; --cuff:#4A6A98; --feet:#3F5B85;
+  --edge:#D6DDE3; --coral:#E98A6B; --coralEdge:#D06E50; --mustard:#E7B75A; --mustardEdge:#C99A3E;
+  --lavender:#A99BE6; --wall:#5F6C7B; --wallDot:#4D5866;
+  --gold:#D8C27E; --goldEdge:#B9A25A; --silver:#C3CBD5; --silverEdge:#A2AEBC; --bronze:#C59674; --bronzeEdge:#A57858;
+  --sendTint:#E9DBD9; --sendBloom:#E9CFC9; --heart:#E5604A; --plan:#DCE2EA; --planEdge:#C7D0DA;
+  --hole:rgba(31,42,58,.09); --seam:rgba(31,42,58,.05);
+  --out:cubic-bezier(.22,1,.36,1);
+  --gutter:clamp(16px,4vw,48px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--surface);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:17px;line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.num{font-family:"Baloo 2",system-ui,sans-serif;line-height:1.05}
+.shout{font-family:"Lilita One","Baloo 2",sans-serif;font-weight:400;letter-spacing:.005em}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- La pared: contrachapado + cuadrícula de tuercas ---------- */
+.wall{position:relative;isolation:isolate}
+.wall::before{content:"";position:absolute;inset:0;z-index:-3;pointer-events:none;
+  background:
+    radial-gradient(circle,var(--hole) 3.6px,transparent 4.2px) 0 0/48px 48px,
+    linear-gradient(115deg,rgba(255,255,255,.32) 0 38%,transparent 38% 100%),
+    linear-gradient(115deg,transparent 0 38%,var(--seam) 38% calc(38% + 2px),transparent calc(38% + 2px)),
+    linear-gradient(180deg,transparent 0 82%,rgba(31,42,58,.025) 82%);
+}
+.light{position:absolute;inset:-20% -60%;z-index:-2;pointer-events:none;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);
+  opacity:.5;animation:sweep 26s linear infinite}
+@keyframes sweep{from{transform:translateX(-45%)}to{transform:translateX(45%)}}
+.mote{position:absolute;top:-10px;width:5px;height:5px;border-radius:50%;background:#fff;opacity:.9;pointer-events:none;z-index:-1;
+  animation:fall var(--t,14s) linear infinite;animation-delay:var(--d,0s)}
+@keyframes fall{from{transform:translate3d(0,-10px,0)}to{transform:translate3d(var(--dx,20px),110vh,0)}}
+
+/* ---------- Nav, con Crux colgando del punto ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:14px var(--gutter);transition:background .3s var(--out),border-color .3s var(--out);border-bottom:2px solid transparent}
+nav.solid{background:rgba(233,237,241,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom-color:var(--edge)}
+.logo{font-family:"Baloo 2";font-weight:800;font-size:30px;letter-spacing:-.02em;color:var(--ink);text-decoration:none;display:inline-flex;align-items:baseline}
+.logo .dot{display:inline-block;width:.2em;height:.2em;border-radius:50%;background:var(--bag);margin-left:.05em;position:relative}
+.logo .hanger{position:absolute;left:50%;top:50%;width:26px;margin-left:-13px;transform-origin:13px 0;animation:swing 3.4s ease-in-out infinite alternate;pointer-events:none}
+.logo .hanger svg{display:block;width:100%;height:auto;overflow:visible}
+@keyframes swing{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+.nav-links{display:flex;gap:28px;align-items:center;font-weight:700;font-size:15px}
+.nav-links a{text-decoration:none;color:var(--muted);transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+@media (max-width:720px){.nav-links a:not(.pill){display:none}.nav-links{gap:10px}}
+@media (max-width:440px){.nav-links .pill{display:none}}
+/* Selector de idioma */
+.lang{position:relative}
+.lang-btn{display:inline-flex;align-items:center;gap:8px;background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:800;font-size:14px;color:var(--ink);
+  box-shadow:0 3px 0 var(--edge);transition:transform .12s var(--out),box-shadow .12s var(--out)}
+.lang-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--edge)}
+.lang-btn .chev{width:12px;height:8px;color:var(--muted);transition:transform .25s var(--out)}
+.lang.open .lang-btn .chev{transform:rotate(180deg)}
+.flag{display:inline-block;width:24px;height:16px;border-radius:4px;overflow:hidden;flex:none;box-shadow:0 0 0 1px rgba(31,42,58,.08)}
+.flag svg{display:block;width:100%;height:100%}
+.lang-menu{position:absolute;right:0;top:calc(100% + 10px);background:var(--card);border-radius:20px;padding:8px;min-width:190px;box-shadow:0 6px 0 var(--edge);
+  opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s var(--out),transform .2s var(--out);z-index:60}
+.lang.open .lang-menu{opacity:1;transform:none;pointer-events:auto}
+.lang-menu button{display:flex;align-items:center;gap:12px;width:100%;padding:9px 12px;border-radius:12px;font-weight:700;font-size:15px;text-align:left;transition:background .15s}
+.lang-menu button:hover{background:var(--surface)}
+.lang-menu button[aria-selected="true"]{background:var(--surface);font-weight:800}
+.lang-menu button[aria-selected="true"]::after{content:"";margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--bag)}
+
+/* ---------- Botones: píldora como el puño, borde plano debajo ---------- */
+.pill{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:14px 24px;font-weight:800;font-size:16px;
+  background:var(--cuff);color:#fff!important;text-decoration:none;box-shadow:0 5px 0 var(--feet);
+  transition:transform .12s var(--out),box-shadow .12s var(--out)}
+.pill:hover{transform:translateY(-1px);box-shadow:0 6px 0 var(--feet)}
+.pill:active{transform:translateY(4px);box-shadow:0 1px 0 var(--feet)}
+.pill.small{padding:9px 16px;font-size:14px;box-shadow:0 3px 0 var(--feet)}
+.pill.small:active{transform:translateY(2px);box-shadow:0 1px 0 var(--feet)}
+.pill.ghost{background:var(--card);color:var(--ink)!important;box-shadow:0 5px 0 var(--edge)}
+.pill.ghost:active{box-shadow:0 1px 0 var(--edge)}
+.pill svg{width:20px;height:20px}
+.pill .tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.18);padding:3px 8px;border-radius:999px}
+.pill.ghost .tag{background:var(--surface);color:var(--muted)}
+
+/* ---------- Hero: el top de Crux ---------- */
+.hero-wrap{position:relative;overflow:hidden}
+.hero-wrap canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.hero-bloom{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at var(--bx,70%) var(--by,60%),var(--sendBloom) 0,var(--sendTint) 22%,rgba(233,219,217,0) 52%)}
+.hero{min-height:100vh;min-height:100svh;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:24px;
+  padding:110px var(--gutter) 60px;max-width:1280px;margin:0 auto}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--cuff);background:var(--card);border-radius:999px;padding:7px 14px 7px 10px;box-shadow:0 3px 0 var(--edge)}
+.kicker i{width:8px;height:8px;border-radius:50%;background:var(--bag);display:block;animation:dot 2.4s ease-in-out infinite}
+@keyframes dot{50%{opacity:.35}}
+.hero h1{font-size:clamp(48px,6.2vw,92px);margin:22px 0 20px;color:var(--ink);line-height:.95}
+.hero h1 .w{display:inline-block;opacity:0;transform:translateY(.32em);animation:rise .9s var(--out) forwards;animation-delay:calc(var(--i)*90ms + 150ms)}
+.hero h1 .blue{color:var(--bag)}
+.hero h1.long{font-size:clamp(42px,5.2vw,78px)}
+@keyframes rise{to{opacity:1;transform:none}}
+.hero p.lead{font-size:clamp(18px,1.6vw,21px);color:var(--muted);max-width:28em;font-weight:600}
+.fade-in{opacity:0;transform:translateY(14px);animation:rise .8s var(--out) forwards;animation-delay:var(--d,0s)}
+.ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+.checks{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.check{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15px;background:var(--card);border-radius:999px;padding:8px 16px 8px 9px;box-shadow:0 3px 0 var(--edge)}
+.check svg{width:22px;height:22px}
+.hero-crux{position:relative;height:min(76vh,620px);display:flex;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hero-crux svg{height:100%;width:auto;overflow:visible;opacity:0;animation:rise .8s var(--out) .2s forwards}
+.hero-crux .top{position:absolute;left:50%;top:2%;transform:translateX(-50%);font-size:clamp(64px,8vw,120px);color:var(--coral);
+  text-shadow:0 7px 0 var(--coralEdge);line-height:1;opacity:0;pointer-events:none;white-space:nowrap}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding-top:92px}
+  .hero-crux{height:44vh;order:-1;margin-bottom:-10px}
+}
+
+/* ---------- Marquee ---------- */
+.band{background:var(--cuff);color:#fff;overflow:hidden;padding:18px 0;transform:rotate(-1.4deg);margin:0 -10px;border-bottom:6px solid var(--feet)}
+.band .track{display:flex;gap:48px;width:max-content;animation:marquee 32s linear infinite}
+.band span{font-family:"Lilita One";font-size:clamp(28px,3.4vw,44px);white-space:nowrap;display:flex;align-items:center;gap:48px}
+.band span::after{content:"";width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.35)}
+.band .c{color:#F6B9A3}.band .m{color:#F3D79D}.band .l{color:#D2CAF4}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ---------- Secciones ---------- */
+section{position:relative}
+.sec{max-width:1200px;margin:0 auto;padding:120px var(--gutter)}
+.center{text-align:center}.center .sub{margin-left:auto;margin-right:auto}
+.eyebrow{font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--bag)}
+.sec h2{font-size:clamp(38px,5vw,64px);font-weight:800;margin:10px 0 14px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:19px;font-weight:600;max-width:32em}
+[data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .8s var(--out),transform .8s var(--out);transition-delay:var(--d,0s)}
+[data-reveal].in{opacity:1;transform:none}
+.card{background:var(--card);border-radius:28px;overflow:hidden;box-shadow:0 6px 0 var(--edge)}
+.card .head{background:var(--cuff);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:14px}
+.card .head .n{font-family:"Baloo 2";font-size:22px;line-height:1;opacity:.7}
+
+/* ---------- Tres pasos: tres pantallas de la app ---------- */
+.steps{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,4vw,56px);margin-top:64px}
+.rope{position:absolute;left:8%;right:8%;top:150px;height:120px;z-index:0;pointer-events:none}
+.rope path{fill:none;stroke:var(--bag);stroke-width:5;stroke-linecap:round;stroke-dasharray:1 14;opacity:.55}
+.step{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+.phone{width:100%;max-width:250px;transition:transform .5s var(--out)}
+.phone svg{width:100%;height:auto;display:block;filter:none}
+.step:nth-child(2) .phone{transform:rotate(-2.5deg)}
+.step:nth-child(3) .phone{transform:translateY(28px) rotate(1.5deg)}
+.step:nth-child(4) .phone{transform:rotate(2.5deg)}
+.step:hover .phone{transform:translateY(-6px) rotate(0)}
+.step .n{margin-top:30px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--cuff);color:#fff;
+  font-family:"Baloo 2";font-weight:800;font-size:22px;box-shadow:0 4px 0 var(--feet)}
+.step:nth-child(3) .n{margin-top:58px}
+.step h3{font-size:28px;font-weight:800;margin:12px 0 6px}
+.step p{color:var(--muted);font-weight:600;font-size:16px;max-width:19em}
+@media (max-width:900px){
+  .steps{grid-template-columns:1fr;gap:64px}.rope{display:none}
+  .step:nth-child(n) .phone{transform:none;max-width:230px}
+  .step:nth-child(3) .n{margin-top:30px}
+}
+/* animación de las pantallas (todas a 7 s, así siguen sincronizadas) */
+.mark{fill:none;stroke:#fff;stroke-width:4;stroke-dasharray:1;stroke-dashoffset:1;animation:mark 7s var(--out) infinite;animation-delay:var(--d)}
+@keyframes mark{0%{stroke-dashoffset:1;opacity:1}9%,84%{stroke-dashoffset:0;opacity:1}94%,100%{stroke-dashoffset:0;opacity:0}}
+.lbl{opacity:0;animation:lbl 7s var(--out) infinite;animation-delay:var(--d)}
+@keyframes lbl{0%,5%{opacity:0}12%,84%{opacity:1}94%,100%{opacity:0}}
+.press{animation:press 7s var(--out) infinite;transform-box:fill-box;transform-origin:center}
+@keyframes press{0%,64%{transform:none}67%{transform:translateY(3px)}71%,100%{transform:none}}
+.toast{opacity:0;animation:toast 7s var(--out) infinite;transform-box:fill-box;transform-origin:center}
+@keyframes toast{0%,67%{opacity:0;transform:translateY(-8px)}72%,88%{opacity:1;transform:none}95%,100%{opacity:0}}
+.rec{animation:rec 1.2s steps(1) infinite}
+@keyframes rec{50%{opacity:.25}}
+.climb{animation:climb 7s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes climb{
+  0%,6%{transform:translate(80px,296px)} 18%,22%{transform:translate(142px,244px)} 34%,38%{transform:translate(98px,190px)}
+  50%,54%{transform:translate(152px,136px)} 66%,90%{transform:translate(116px,84px)} 100%{transform:translate(80px,296px)}}
+.climb circle{animation:climbop 7s linear infinite}
+@keyframes climbop{0%,90%{opacity:1}94%,98%{opacity:0}100%{opacity:1}}
+.ring{stroke-dasharray:1;stroke-dashoffset:1;animation:ring 7s linear infinite}
+@keyframes ring{0%{stroke-dashoffset:1}90%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.topflash{opacity:0;animation:topflash 7s var(--out) infinite;transform-box:fill-box;transform-origin:center}
+@keyframes topflash{0%,64%{opacity:0;transform:scale(.95)}68%,88%{opacity:1;transform:none}94%,100%{opacity:0}}
+.riseb{transform-box:fill-box;transform-origin:bottom;animation:riseb 7s var(--out) infinite;animation-delay:var(--d)}
+@keyframes riseb{0%{transform:scaleY(0)}12%,86%{transform:scaleY(1)}94%,100%{transform:scaleY(0)}}
+.ava{opacity:0;animation:ava 7s var(--out) infinite;animation-delay:var(--d);transform-box:fill-box;transform-origin:center}
+@keyframes ava{0%,10%{opacity:0;transform:translateY(-10px)}18%,86%{opacity:1;transform:none}94%,100%{opacity:0}}
+.plus{opacity:0;animation:plus 7s var(--out) infinite;transform-box:fill-box;transform-origin:center}
+@keyframes plus{0%,34%{opacity:0;transform:translateY(8px)}42%,86%{opacity:1;transform:none}94%,100%{opacity:0}}
+
+/* ---------- Liga ---------- */
+.league{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;margin-top:56px}
+@media (max-width:900px){.league{grid-template-columns:1fr}}
+.chart-card .art{background:var(--card);padding:16px 16px 4px}
+.chart-card svg{width:100%;height:auto;display:block}
+.rank{position:relative;padding:16px 20px 20px;height:300px}
+.rank .row{position:absolute;left:20px;right:20px;height:64px;display:flex;align-items:center;gap:14px;padding:0 14px;border-radius:18px;background:var(--raised);
+  transition:transform .55s var(--out)}
+.rank .pos{width:44px;height:36px;border-radius:999px;display:grid;place-items:center;font-family:"Baloo 2";font-weight:800;font-size:17px;background:var(--surface);color:var(--ink);transition:background .3s,box-shadow .3s}
+.rank .pos.p1{background:var(--gold);box-shadow:0 3px 0 var(--goldEdge)}
+.rank .pos.p2{background:var(--silver);box-shadow:0 3px 0 var(--silverEdge)}
+.rank .pos.p3{background:var(--bronze);box-shadow:0 3px 0 var(--bronzeEdge)}
+.rank .dot{width:14px;height:14px;border-radius:50%}
+.rank .name{flex:1;font-weight:800}
+.rank .score{font-family:"Baloo 2";font-weight:800;font-size:22px;font-variant-numeric:tabular-nums}
+
+/* ---------- Fila de Crux ---------- */
+.crux-sec .sec{padding-bottom:40px}
+.crux-row{overflow:hidden;padding:10px 0 110px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.crux-row .track{display:flex;width:max-content;animation:marquee 70s linear infinite reverse}
+.crux-row svg{width:clamp(130px,15vw,190px);height:auto;overflow:visible;flex:none;margin:0 4px}
+
+/* ---------- CTA final ---------- */
+.final{text-align:center;padding:120px var(--gutter) 0;overflow:hidden}
+.final h2{font-size:clamp(46px,7vw,96px);margin:10px auto 18px;max-width:12em}
+.final .ctas{justify-content:center}
+.final svg.peek{display:block;margin:30px auto 0;width:min(560px,100%);height:auto;overflow:visible}
+footer{background:var(--wall);color:#C9D2DC;padding:28px var(--gutter);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-weight:700;font-size:14px;margin-top:-4px}
+footer .logo{font-size:24px;color:#fff}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .light,.mote{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="#" aria-label="rocodrom">rocodrom<span class="dot"><span class="hanger"><svg id="miniCrux" viewBox="-110 -200 220 350" aria-hidden="true"></svg></span></span></a>
+  <div class="nav-links">
+    <a href="#como" data-i18n="nav1">Cómo se juega</a>
+    <a href="#liga" data-i18n="nav2">La liga</a>
+    <a href="#crux">Crux</a>
+    <div class="lang" id="lang"><button class="lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Idioma"><span class="flag" id="langFlag"></span><span id="langCode">ES</span><svg class="chev" viewBox="0 0 12 8"><path d="M1.5 1.5 6 6l4.5-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="lang-menu" id="langMenu" role="listbox"></div></div>
+    <a class="pill small" href="#descargar" data-i18n="navSoon">Muy pronto</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-wrap wall" id="heroWall">
+  <div class="light"></div>
+  <div class="hero-bloom" id="bloom"></div>
+  <canvas id="heroHoles"></canvas>
+  <header class="hero">
+    <div>
+      <span class="kicker fade-in" style="--d:.05s"><i></i><span data-i18n="kicker">Escalada con tus amigos</span></span>
+      <h1 class="shout" id="h1"></h1>
+      <p class="lead fade-in" style="--d:1s" data-i18n="lead">Os turnáis poniendo vías como reto, os grabáis intentándolas y quien más sube gana la liga del mes.</p>
+      <div class="checks fade-in" style="--d:1.1s">
+        <span class="check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#6F95C9"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="chk1">Gratis</span></span>
+        <span class="check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#6F95C9"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="chk2">Con tu grupo del roco</span></span>
+        <span class="check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#6F95C9"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="chk3">iOS y Android</span></span>
+      </div>
+      <div class="ctas fade-in" style="--d:1.2s">
+        <a class="pill" href="#descargar">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2.1-.9-3.4-.9-1.8 0-3.4 1-4.3 2.6-1.8 3.2-.5 7.9 1.3 10.5.9 1.3 1.9 2.7 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.6 1-1.5 1.4-2.9 1.4-3-.1 0-2.6-1-2.6-4.2zM13.9 4.9c.7-.9 1.2-2 1-3.2-1 .1-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"/></svg>
+          App Store <span class="tag" data-i18n="soon">Pronto</span>
+        </a>
+        <a class="pill ghost" href="#descargar">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.6 2.3c-.3.3-.4.7-.4 1.2v17c0 .5.1.9.4 1.2l9.5-9.7-9.5-9.7zm10.6 10.8 2.7 2.7-11 6.3 8.3-9zm3.9-3.5 3 1.7c.9.5.9 1.3 0 1.8l-3.1 1.8-3-3 3.1-2.3zM5.2 1.9l11 6.3-2.7 2.7-8.3-9z"/></svg>
+          Google Play <span class="tag" data-i18n="soon">Pronto</span>
+        </a>
+      </div>
+    </div>
+    <div class="hero-crux" id="heroCrux">
+      <div class="top shout" id="topTitle" data-i18n="top">¡TOP!</div>
+      <svg id="cruxHero" aria-label="Crux, la bolsa de magnesio, celebrando un top"></svg>
+    </div>
+  </header>
+</div>
+
+<div class="band" aria-hidden="true">
+  <div class="track" id="bandTrack"></div>
+</div>
+
+<!-- CÓMO SE JUEGA -->
+<section id="como" class="wall">
+  <div class="light"></div>
+  <div class="sec center">
+    <div class="eyebrow" data-reveal data-i18n="howE">Cómo se juega</div>
+    <h2 data-reveal style="--d:.05s" data-i18n="howT">Tres pasos. Cero excusas.</h2>
+    <p class="sub" data-reveal style="--d:.1s" data-i18n="howS">Solo necesitas a tus amigos y un rocódromo.</p>
+    <div class="steps">
+      <svg class="rope" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0,60 C160,10 280,110 500,60 C720,10 840,110 1000,60"/></svg>
+
+      <div class="step" data-reveal style="--d:.1s">
+        <div class="phone">
+          <svg viewBox="0 0 240 420" aria-hidden="true">
+            <defs><clipPath id="scr1"><rect x="9" y="9" width="222" height="402" rx="28"/></clipPath></defs>
+            <rect width="240" height="420" rx="36" fill="#1F2A3A"/>
+            <g clip-path="url(#scr1)">
+              <rect width="240" height="420" fill="#5F6C7B"/>
+              <path d="M9,9 L170,9 L96,420 L9,420Z" fill="rgba(255,255,255,.05)"/>
+              <g fill="#4D5866" id="holesA"></g>
+              <path d="M200,200 c4-8 20-8 22,0 c2,8-18,10-22,0z" fill="#E7B75A"/>
+              <path d="M24,120 c4-8 20-8 22,0 c2,8-18,10-22,0z" fill="#A99BE6"/>
+              <path d="M180,280 c4-8 22-8 24,0 c2,8-20,10-24,0z" fill="#E98A6B"/>
+              <path d="M30,230 c4-7 18-7 20,0 c2,7-16,9-20,0z" fill="#E98A6B"/>
+              <path d="M64,282 c5-12 30-12 32,0 c2,12-28,14-32,0z" fill="#6F95C9"/>
+              <path d="M126,232 c4-10 26-12 28,0 c2,10-24,12-28,0z" fill="#6F95C9"/>
+              <path d="M82,180 c4-10 24-10 26,0 c2,10-22,12-26,0z" fill="#6F95C9"/>
+              <path d="M136,126 c4-10 26-10 28,0 c2,10-24,12-28,0z" fill="#6F95C9"/>
+              <path d="M100,76 c4-10 26-10 28,0 c2,10-24,12-28,0z" fill="#6F95C9"/>
+              <circle class="mark" pathLength="1" cx="80" cy="282" r="22" style="--d:.2s"/>
+              <circle class="mark" pathLength="1" cx="140" cy="232" r="20" style="--d:.55s"/>
+              <circle class="mark" pathLength="1" cx="95" cy="180" r="20" style="--d:.9s"/>
+              <circle class="mark" pathLength="1" cx="150" cy="126" r="20" style="--d:1.25s"/>
+              <circle class="mark" pathLength="1" cx="114" cy="76" r="22" style="--d:1.6s"/>
+              <g class="lbl" style="--d:.25s"><rect x="50" y="300" width="60" height="16" rx="8" fill="#fff"/><text x="80" y="312" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="10" fill="#1F2A3A" data-i18n="start">SALIDA</text></g>
+              <g class="lbl" style="--d:1.65s"><rect x="140" y="68" width="44" height="16" rx="8" fill="#E98A6B"/><text x="162" y="80" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="10" fill="#fff" data-i18n="topL">TOP</text></g>
+              <rect x="0" y="0" width="240" height="56" fill="rgba(31,42,58,.55)"/>
+              <text x="120" y="42" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="16" fill="#fff" data-i18n="newCh" data-fit="200">Reto nuevo</text>
+              <rect x="9" y="326" width="222" height="100" rx="24" fill="#fff"/>
+              <text x="30" y="356" font-family="Baloo 2" font-weight="800" font-size="18" fill="#1F2A3A" data-i18n="route" data-fit="190">La azul del desplome</text>
+              <circle cx="35" cy="372" r="5" fill="#6F95C9"/><text x="46" y="376" font-family="Nunito" font-weight="700" font-size="11" fill="#556072" data-i18n="routeMeta" data-fit="170">Vía del roco · 2 vidas</text>
+              <g class="press"><rect x="28" y="387" width="184" height="30" rx="15" fill="#3F5B85"/><rect x="28" y="384" width="184" height="30" rx="15" fill="#4A6A98"/><text x="120" y="404" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="12" fill="#fff" data-i18n="publish" data-fit="170">Publicar reto</text></g>
+              <g class="toast"><rect x="40" y="66" width="160" height="34" rx="17" fill="#fff"/><rect x="40" y="96" width="160" height="4" rx="2" fill="#D6DDE3"/><circle cx="60" cy="83" r="9" fill="#8DB39A"/><path d="M55.5,83 l3,3 l6,-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="76" y="88" font-family="Nunito" font-weight="800" font-size="12" fill="#1F2A3A" data-i18n="published" data-fit="116">Reto publicado</text></g>
+            </g>
+            <rect x="96" y="16" width="48" height="8" rx="4" fill="#1F2A3A"/>
+          </svg>
+        </div>
+        <div class="n">1</div>
+        <h3 data-i18n="s1t">Pon una vía</h3>
+        <p data-i18n="s1p">Marca una vía del roco y súbela.</p>
+      </div>
+
+      <div class="step" data-reveal style="--d:.2s">
+        <div class="phone">
+          <svg viewBox="0 0 240 420" aria-hidden="true">
+            <defs><clipPath id="scr2"><rect x="9" y="9" width="222" height="402" rx="28"/></clipPath></defs>
+            <rect width="240" height="420" rx="36" fill="#1F2A3A"/>
+            <g clip-path="url(#scr2)">
+              <rect width="240" height="420" fill="#3B4658"/>
+              <path d="M9,9 L170,9 L96,420 L9,420Z" fill="rgba(255,255,255,.03)"/>
+              <g fill="#2F3848" id="holesB"></g>
+              <path d="M64,296 c5-12 30-12 32,0 c2,12-28,14-32,0z" fill="#6F95C9"/>
+              <path d="M128,244 c4-10 26-12 28,0 c2,10-24,12-28,0z" fill="#6F95C9"/>
+              <path d="M85,190 c4-10 24-10 26,0 c2,10-22,12-26,0z" fill="#6F95C9"/>
+              <path d="M138,136 c4-10 26-10 28,0 c2,10-24,12-28,0z" fill="#6F95C9"/>
+              <path d="M102,84 c4-10 26-10 28,0 c2,10-24,12-28,0z" fill="#6F95C9"/>
+              <g class="climb"><circle r="11" fill="#fff" opacity=".95"/><circle r="18" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/></g>
+              <rect x="0" y="0" width="240" height="56" fill="rgba(20,26,34,.55)"/>
+              <circle class="rec" cx="32" cy="37" r="6" fill="#E5604A"/>
+              <text x="44" y="42" font-family="Nunito" font-weight="800" font-size="14" fill="#fff" id="timer">00:00</text>
+              <g transform="translate(160,37)">
+                <path d="M0,0.9 C-0.25,0.72 -1,0.28 -1,-0.25 C-1,-0.68 -0.66,-0.98 -0.32,-0.98 C-0.13,-0.98 0,-0.86 0,-0.66 C0,-0.86 0.13,-0.98 0.32,-0.98 C0.66,-0.98 1,-0.68 1,-0.25 C1,0.28 0.25,0.72 0,0.9 Z" transform="scale(10)" fill="#E5604A"/>
+                <path d="M0,0.9 C-0.25,0.72 -1,0.28 -1,-0.25 C-1,-0.68 -0.66,-0.98 -0.32,-0.98 C-0.13,-0.98 0,-0.86 0,-0.66 C0,-0.86 0.13,-0.98 0.32,-0.98 C0.66,-0.98 1,-0.68 1,-0.25 C1,0.28 0.25,0.72 0,0.9 Z" transform="translate(24,0) scale(10)" fill="#E5604A"/>
+                <path d="M0,0.9 C-0.25,0.72 -1,0.28 -1,-0.25 C-1,-0.68 -0.66,-0.98 -0.32,-0.98 C-0.13,-0.98 0,-0.86 0,-0.66 C0,-0.86 0.13,-0.98 0.32,-0.98 C0.66,-0.98 1,-0.68 1,-0.25 C1,0.28 0.25,0.72 0,0.9 Z" transform="translate(48,0) scale(10)" fill="none" stroke="#7C8796" stroke-width=".16" stroke-dasharray=".22 .16"/>
+              </g>
+              <g class="topflash"><text x="120" y="62" dy="56" text-anchor="middle" font-family="Lilita One" font-size="40" fill="#D06E50">¡TOP!</text><text x="120" y="58" dy="56" text-anchor="middle" font-family="Lilita One" font-size="40" fill="#E98A6B">¡TOP!</text></g>
+              <text x="120" y="338" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11" fill="#A9B3C0" data-i18n="attempt" data-fit="190">Intento 1 de 2</text>
+              <circle cx="120" cy="378" r="26" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="5"/>
+              <circle class="ring" pathLength="1" cx="120" cy="378" r="26" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" transform="rotate(-90 120 378)"/>
+              <rect x="110" y="368" width="20" height="20" rx="5" fill="#E5604A"/>
+            </g>
+            <rect x="96" y="16" width="48" height="8" rx="4" fill="#1F2A3A"/>
+          </svg>
+        </div>
+        <div class="n">2</div>
+        <h3 data-i18n="s2t">Tus amigos la intentan</h3>
+        <p data-i18n="s2p">Dos vidas cada uno.</p>
+      </div>
+
+      <div class="step" data-reveal style="--d:.3s">
+        <div class="phone">
+          <svg viewBox="0 0 240 420" aria-hidden="true">
+            <defs><clipPath id="scr3"><rect x="9" y="9" width="222" height="402" rx="28"/></clipPath></defs>
+            <rect width="240" height="420" rx="36" fill="#1F2A3A"/>
+            <g clip-path="url(#scr3)">
+              <rect width="240" height="420" fill="#E9EDF1"/>
+              <g fill="rgba(31,42,58,.07)" id="holesC"></g>
+              <text x="120" y="52" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="17" fill="#1F2A3A" data-i18n="league" data-fit="196">Liga del mes</text>
+              <g id="podium"></g>
+              <g class="plus"><rect x="150" y="84" width="62" height="28" rx="14" fill="#E98A6B"/><text x="181" y="103" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="16" fill="#fff">+20</text></g>
+              <g id="miniRows"></g>
+            </g>
+            <rect x="96" y="16" width="48" height="8" rx="4" fill="#1F2A3A"/>
+          </svg>
+        </div>
+        <div class="n">3</div>
+        <h3 data-i18n="s3t">Gana la liga</h3>
+        <p data-i18n="s3p">Cada top suma.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIGA -->
+<section id="liga">
+  <div class="sec">
+    <div class="eyebrow" data-reveal data-i18n="lgE">Una liga cada mes</div>
+    <h2 data-reveal style="--d:.05s" data-i18n="lgT">Se gana contra tus amigos, no contra la pared.</h2>
+    <p class="sub" data-reveal style="--d:.1s" data-i18n="lgS">Todas las vías valen lo mismo. Gana quien más sube, y el grupo vota si un top es de verdad.</p>
+    <div class="league">
+      <article class="card chart-card" data-reveal style="--d:.1s" id="chartCard">
+        <div class="head"><span data-i18n="chart">Liga del mes · reto a reto</span><span class="n" id="retoN">R0</span></div>
+        <div class="art"><svg viewBox="0 0 600 300" id="chart" aria-label="Gráfica de puntos de la liga"></svg></div>
+      </article>
+      <article class="card" data-reveal style="--d:.2s">
+        <div class="head"><span data-i18n="rank">Clasificación</span><button class="pill small" id="replay" style="box-shadow:none;background:rgba(255,255,255,.16)" data-i18n="replay">Ver otra vez</button></div>
+        <div class="rank" id="rank"></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CRUX -->
+<section id="crux" class="crux-sec">
+  <div class="sec center">
+    <div class="eyebrow" data-reveal data-i18n="cruxE">Conoce a Crux</div>
+    <h2 data-reveal style="--d:.05s" data-i18n="cruxT">Cada uno, con su Crux.</h2>
+    <p class="sub" data-reveal style="--d:.1s" data-i18n="cruxS">Una bolsa de magnesio con mucho carácter. Gana skins jugando y lúcelas delante de tu grupo.</p>
+  </div>
+  <div class="crux-row" aria-hidden="true"><div class="track" id="cruxTrack"></div></div>
+</section>
+
+<!-- CTA -->
+<section class="final wall" id="descargar">
+  <div class="light"></div>
+  <div class="eyebrow" data-reveal data-i18n="finE">Gratis · muy pronto en iOS y Android</div>
+  <h2 class="shout" data-reveal style="--d:.05s" data-i18n="finT">¿Quién pone la próxima vía?</h2>
+  <p class="sub" data-reveal style="--d:.1s;margin:0 auto" data-i18n="finS">Monta el grupo con los de tu roco. Es gratis, para todos.</p>
+  <div class="ctas" data-reveal style="--d:.15s">
+    <a class="pill" href="#">App Store <span class="tag" data-i18n="soon">Pronto</span></a>
+    <a class="pill ghost" href="#">Google Play <span class="tag" data-i18n="soon">Pronto</span></a>
+  </div>
+  <svg class="peek" id="cruxPeek" viewBox="-270 -200 540 370" aria-hidden="true"></svg>
+</section>
+<footer>
+  <span class="logo">rocodrom<span class="dot"></span></span>
+  <span>© 2026 rocodrom</span>
+</footer>
+
+<script>
+(() => {
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+
+/* =====================================================================
+   Crux: port 1:1 de animaciones/src (bag.tsx + anims.tsx) a SVG en texto.
+   150 frames a 30 fps; cada clip es una función pura del frame.
+   ===================================================================== */
+const FPS = 30, N = 150;
+const n = v => Math.round(v * 100) / 100;
+const clamp01 = v => Math.max(0, Math.min(1, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+// muelle de Remotion (masa 1) en forma cerrada
+function spring(fr, c, k) {
+  const t = fr / FPS; if (t <= 0) return 0;
+  const w0 = Math.sqrt(k), z = c / (2 * w0);
+  if (z < 1) { const wd = w0 * Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w0 * t) * (Math.cos(wd * t) + (z * w0 / wd) * Math.sin(wd * t)); }
+  if (z === 1) return 1 - Math.exp(-w0 * t) * (1 + w0 * t);
+  const s = Math.sqrt(z * z - 1), r1 = -w0 * (z - s), r2 = -w0 * (z + s);
+  return 1 - (r2 * Math.exp(r1 * t) - r1 * Math.exp(r2 * t)) / (r2 - r1);
+}
+const sp = (f, f0, d, k) => f < f0 ? 0 : spring(f - f0, d, k);
+const on = (f, f0, f1, d1 = 12, k1 = 160, d2 = 16, k2 = 140) => sp(f, f0, d1, k1) * (1 - sp(f, f1, d2, k2));
+const osc = (f, p, ph = 0) => Math.sin(2 * Math.PI * f / p + ph);
+const blinkAt = (f, f0) => { const d = f - f0; return d < 0 || d > 6 ? 0 : Math.sin(d / 6 * Math.PI); };
+const eio = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+function kf(f, xs, ys) {
+  if (f <= xs[0]) return ys[0];
+  for (let i = 1; i < xs.length; i++) if (f <= xs[i]) return lerp(ys[i - 1], ys[i], eio((f - xs[i - 1]) / (xs[i] - xs[i - 1])));
+  return ys[ys.length - 1];
+}
+const arc = (f, f0, f1, h) => { if (f <= f0 || f >= f1) return 0; const t = (f - f0) / (f1 - f0); return -h * 4 * t * (1 - t); };
+const impact = (f, f0, k = 1) => f < f0 ? 0 : k * (1 - spring(f - f0, 7, 200));
+const rnd = (i, k) => { const s = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return s - Math.floor(s); };
+const squash = (r, sq, st = 0) => { r.sy += -sq + st; r.sx += 0.7 * sq - 0.6 * st; };
+
+const C = { chalk: '#FFFFFF', chalkShade: '#DCE3EA', tongue: '#EF8676', coral: '#E98A6B', mustard: '#E7B75A',
+  lavender: '#A99BE6', heart: '#E5604A', wall: '#5F6C7B', wallDark: '#4D5866', body: '#6F95C9' };
+
+const SKINS = [
+  ['classic', '#6F95C9', '#577BAD', '#4A6A98', '#3F5B85'],
+  ['coral', '#E98A6B', '#D06E50', '#B85A3F', '#A04C34'],
+  ['mustard', '#E7B75A', '#D29E40', '#B58434', '#9C702A', '#3A2A14'],
+  ['alpine', '#A99BE6', '#8F80D2', '#7464BA', '#5F52A0'],
+  ['night', '#3B4658', '#2F3848', '#252C39', '#1E2430', '#F4EFE7'],
+  ['plaid', '#8DB39A', '#739A81', '#5F846C', '#4F705B', '#1F2E25'],
+  ['flamenco', '#E899A8', '#D47E92', '#BA6A7E', '#A05A6C'],
+  ['glaciar', '#7FB8C4', '#639EAC', '#528795', '#447380'],
+  ['magma', '#C7523F', '#A84234', '#8E372B', '#762E24'],
+  ['musgo', '#5F8F6B', '#4C7757', '#3E6348', '#33523C', '#14281B'],
+  ['ghost', '#FFFFFF', '#E3E8EE', '#C9D2DC', '#AEB9C6', '#2B3442'],
+  ['oro', '#F2C84B', '#DCAA33', '#C08F27', '#A3761F', '#4A3508'],
+].map(([id, body, shade, cuff, feet, eye = '#1F2A3A']) => ({ id, body, shade, cuff, feet, eye, cheek: '#F2A58F' }));
+const SK = Object.fromEntries(SKINS.map(s => [s.id, s]));
+
+const defaultRig = () => ({
+  x: 0, y: 0, rot: 0, sx: 1, sy: 1, feetY: 0, feetSpread: 0, feetDX: 0, footLY: 0, footRY: 0,
+  leftAng: 118, rightAng: 62, leftBend: 8, rightBend: 8, armsFront: false, armsHidden: false, leftFront: false,
+  eyes: 'open', eyeScale: 1, blink: 0, lookX: 0, lookY: 0, brows: null, browAmt: 0,
+  mouth: 'smile', mouthScale: 1, blush: 0.65,
+  chalkA: 'rest', chalkB: 'rest', chalkT: 0, chalkSquash: 1, chalkRot: 0, bubble: 0,
+});
+const BAG = 'M-74,-72 L74,-72 C82,-72 88,-66 88,-56 L96,80 C96,106 78,120 52,120 L-52,120 C-78,120 -96,106 -96,80 L-88,-56 C-88,-66 -82,-72 -74,-72 Z';
+const HEART = 'M0,0.9 C-0.25,0.72 -1,0.28 -1,-0.25 C-1,-0.68 -0.66,-0.98 -0.32,-0.98 C-0.13,-0.98 0,-0.86 0,-0.66 C0,-0.86 0.13,-0.98 0.32,-0.98 C0.66,-0.98 1,-0.68 1,-0.25 C1,0.28 0.25,0.72 0,0.9 Z';
+const CHALK = {
+  rest: { main: [[-50,-84,26],[-18,-104,32],[20,-100,30],[52,-82,24],[0,-80,30],[-4,-96,0],[44,-94,0],[0,-90,0],[30,-90,0]], sh: [[-52,-78,24],[52,-76,22]] },
+  big: { main: [[-72,-104,36],[-30,-142,44],[24,-150,46],[72,-110,36],[0,-100,40],[-4,-190,26],[44,-184,20],[0,-110,0],[30,-110,0]], sh: [[-70,-96,34],[70,-94,32]] },
+  heart: { main: [[-28,-150,30],[-14,-116,26],[28,-150,30],[14,-116,26],[0,-130,28],[0,-98,18],[-50,-82,20],[50,-80,18],[0,-84,24]], sh: [[-50,-78,18],[50,-76,16]] },
+};
+function chalk(r) {
+  const A = CHALK[r.chalkA], B2 = CHALK[r.chalkB], t = r.chalkT; let s = '';
+  const draw = (a, b, col, wob) => a.forEach((c, i) => {
+    const d = b[i], w = wob ? 1 + 0.06 * Math.sin(Math.PI * 8 * r.bubble + i * 1.7) : 1;
+    const rad = Math.max(0, lerp(c[2], d[2], t) * w);
+    if (rad > .2) s += `<circle cx="${n(lerp(c[0], d[0], t))}" cy="${n(lerp(c[1], d[1], t))}" r="${n(rad)}" fill="${col}"/>`;
+  });
+  draw(A.sh, B2.sh, C.chalkShade, false); draw(A.main, B2.main, C.chalk, true);
+  if (r.chalkB === 'heart' && t > .02) {
+    const k = Math.min(1.2, t), o = Math.min(1, t * 1.5);
+    s += `<path d="${HEART}" fill="${C.chalkShade}" transform="translate(4,-126) scale(${n(56 * k)})" opacity="${n(o)}"/><path d="${HEART}" fill="#fff" transform="translate(0,-130) scale(${n(54 * k)})" opacity="${n(o)}"/>`;
+  }
+  return `<g transform="translate(0,-76) rotate(${n(r.chalkRot)}) scale(1,${n(r.chalkSquash)}) translate(0,76)">${s}</g>`;
+}
+function stick(side, ang, bend, col) {
+  const sx = side * 84, sy = 16, a = ang * Math.PI / 180;
+  const hx = sx + Math.cos(a) * 62, hy = sy + Math.sin(a) * 62, nx = -Math.sin(a), ny = Math.cos(a);
+  const cx = (sx + hx) / 2 + nx * bend * side, cy = (sy + hy) / 2 + ny * bend * side;
+  return `<path d="M${sx},${sy} Q${n(cx)},${n(cy)} ${n(hx)},${n(hy)}" stroke="${col}" stroke-width="9" stroke-linecap="round" fill="none"/><circle cx="${n(hx)}" cy="${n(hy)}" r="9.5" fill="${col}"/>`;
+}
+function arms(r, P, layer) {
+  const lf = r.armsFront || r.leftFront, rf = r.armsFront, show = fr => layer === 'all' || (layer === 'front') === fr;
+  return (show(lf) ? stick(-1, r.leftAng, r.leftBend, P.feet) : '') + (show(rf) ? stick(1, r.rightAng, r.rightBend, P.feet) : '');
+}
+function eye(r, s, P) {
+  const E = P.eye, st = d => `<path d="${d}" stroke="${E}" stroke-width="5" stroke-linecap="round" fill="none"/>`; let el;
+  if (r.eyes === 'happy') el = st('M-10,3 Q0,-12 10,3');
+  else if (r.eyes === 'heart') el = `<path d="${HEART}" fill="${C.heart}" transform="translate(0,1) scale(15)"/>`;
+  else if (r.blink > .6) el = st('M-10,0 Q0,7 10,0');
+  else el = `<ellipse cx="${n(r.lookX)}" cy="${n(r.lookY)}" rx="8.5" ry="${n(10.5 * (1 - r.blink))}" fill="${E}"/>` +
+    (r.blink < .3 ? `<circle cx="${n(r.lookX + 2.8)}" cy="${n(r.lookY - 3.6)}" r="3" fill="#fff"/>` : '');
+  return `<g transform="translate(${s * 30},12) scale(${n(r.eyeScale)})">${el}</g>`;
+}
+const BROWS = { up: [-24,-24,-24,-24], curious: [-22,-22,-30,-30] };
+function brows(r, P) {
+  if (!r.brows || r.browAmt <= .01) return '';
+  const v = BROWS[r.brows]; let s = '';
+  [-1, 1].forEach((sd, i) => {
+    const x = sd * 30, xo = x + sd * 12, xi = x - sd * 10;
+    const yo = 12 + v[i * 2] - 4 * (1 - r.browAmt), yi = 12 + v[i * 2 + 1] - 4 * (1 - r.browAmt);
+    s += `<path d="M${xo},${n(yo)} Q${(xo + xi) / 2},${n(Math.min(yo, yi) - 5)} ${xi},${n(yi)}" stroke="${P.eye}" stroke-width="4.4" stroke-linecap="round" fill="none"/>`;
+  });
+  return `<g opacity="${n(Math.min(1, r.browAmt))}">${s}</g>`;
+}
+function mouth(r, P) {
+  const S = d => `<path d="${d}" stroke="${P.eye}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`; let el;
+  if (r.mouth === 'smile') el = S('M-13,-4 Q0,7 13,-4');
+  else { const s = r.mouth === 'big' ? 1.4 : 1;
+    el = `<g transform="scale(${s})"><path d="M-15,-6 Q0,-3 15,-6 Q13,14 0,15 Q-13,14 -15,-6 Z" fill="${P.eye}"/><path d="M-8,9 Q0,2 8,9 Q4,15 0,15 Q-4,15 -8,9 Z" fill="${C.tongue}"/></g>`; }
+  return `<g transform="translate(0,38) scale(${n(r.mouthScale)})">${el}</g>`;
+}
+const bodyTf = r => `translate(0,120) rotate(${n(r.rot)}) scale(${n(r.sx)},${n(r.sy)}) translate(0,-120)`;
+function bag(r, P, id) {
+  return `<g transform="translate(${n(r.x)},${n(r.y)})">` +
+    `<g transform="translate(${n(r.feetDX)},${n(r.feetY)})"><ellipse cx="${n(-40 - r.feetSpread)}" cy="${n(132 + r.footLY)}" rx="24" ry="12" fill="${P.feet}"/><ellipse cx="${n(40 + r.feetSpread)}" cy="${n(132 + r.footRY)}" rx="24" ry="12" fill="${P.feet}"/></g>` +
+    `<g transform="${bodyTf(r)}">${r.armsHidden ? '' : arms(r, P, 'back')}<rect x="88" y="-20" width="16" height="40" rx="8" fill="${P.cuff}"/>` +
+    `<defs><clipPath id="clip-${id}"><path d="${BAG}"/></clipPath></defs><path d="${BAG}" fill="${P.shade}"/>` +
+    `<g clip-path="url(#clip-${id})"><path d="${BAG}" fill="${P.body}" transform="translate(14,-8)"/></g>` +
+    chalk(r) + `<rect x="-94" y="-76" width="188" height="30" rx="15" fill="${P.cuff}"/>` +
+    eye(r, -1, P) + eye(r, 1, P) + brows(r, P) + mouth(r, P) +
+    `<ellipse cx="-56" cy="28" rx="11" ry="6.5" fill="${P.cheek}" opacity="${n(.8 * r.blush)}"/><ellipse cx="56" cy="28" rx="11" ry="6.5" fill="${P.cheek}" opacity="${n(.8 * r.blush)}"/>` +
+    (r.armsHidden ? '' : arms(r, P, 'front')) + `</g></g>`;
+}
+const armsLayer = (r, P) => `<g transform="translate(${n(r.x)},${n(r.y)})"><g transform="${bodyTf(r)}">${arms(r, P, 'all')}</g></g>`;
+
+function base(f) {
+  const r = defaultRig(), br = osc(f, 50);
+  r.sy = 1 + .015 * br; r.sx = 1 - .009 * br; r.rot = 1.2 * osc(f, 150);
+  r.leftAng = 118 + 3 * osc(f, 50, .6); r.rightAng = 62 - 3 * osc(f, 50, .6);
+  r.bubble = f / N; r.chalkSquash = 1 + .02 * osc(f, 50, .8);
+  return r;
+}
+
+const CLIPS = {};
+CLIPS.idle = (f, P, id) => {
+  const r = base(f);
+  r.lookX = kf(f, [0, 25, 35, 70, 80, 115, 125, 150], [-1, -1, 5, 5, -5, -5, -1, -1]);
+  r.lookY = kf(f, [0, 30, 70, 80, 115, 150], [0, -2, -2, 1, 1, 0]);
+  r.rot += r.lookX * .4 + 2 * osc(f, 75); r.x = 4 * osc(f, 75);
+  r.blink = Math.max(blinkAt(f, 20), blinkAt(f, 96), blinkAt(f, 104));
+  let puffs = '';
+  [40, 110].forEach(b => { const a = (f - b) / 34; if (a < 0 || a > 1) return;
+    for (let j = 0; j < 3; j++) puffs += `<circle cx="${n(r.x + (j - 1) * 14 + 6 * Math.sin(a * 5 + j))}" cy="${n(-150 - a * 80 - j * 10)}" r="${n((7 - j * 1.5) * (.5 + .5 * a))}" fill="#fff" opacity="${n(a > .6 ? 1 - (a - .6) / .4 : 1)}"/>`; });
+  return bag(r, P, id) + puffs;
+};
+
+CLIPS.wave = (f, P, id) => {
+  const r = base(f);
+  const crouch = on(f, 8, 18, 14, 260, 30, 500), y = arc(f, 18, 32, 40);
+  const tA = f > 18 && f < 32 ? (f - 18) / 14 : -1, imp = impact(f, 32, .7);
+  squash(r, .12 * crouch + .14 * imp, tA >= 0 ? .06 * Math.abs(1 - 2 * tA) : 0);
+  const up = on(f, 16, 112, 11, 150, 16, 120), w = f >= 34 && f <= 100 ? Math.sin(2 * Math.PI * (f - 34) / 22) : 0;
+  r.rightAng = lerp(r.rightAng, -80, up) + 34 * w * up; r.rightBend = lerp(8, -12, up) + 6 * w * up;
+  r.rot += -10 * up + 3 * w * up; squash(r, .035 * Math.max(0, w) * up);
+  if (f >= 82 && f < 104) r.eyes = 'happy';
+  r.y = y + 6 * crouch; r.feetY = -10 * clamp01(-y / 40);
+  r.mouth = up > .3 ? 'open' : 'smile'; r.brows = 'up'; r.browAmt = up;
+  r.lookX = 3 * up; r.lookY = -up; r.blush = .65 + .35 * up; r.blink = blinkAt(f, 128);
+  r.chalkSquash *= 1 - .14 * crouch + .1 * imp; r.chalkRot = -3 * w * up;
+  let bub = '';
+  [30, 40, 50, 62, 74, 86].forEach((b, i) => { const a = (f - b) / 40; if (a < 0 || a > 1) return;
+    const x = (rnd(i, 1) - .5) * 80 + 8 * Math.sin(a * 6 + i), yy = r.y - 130 - a * 130, rad = 5 + rnd(i, 2) * 6;
+    bub += `<circle cx="${n(x)}" cy="${n(yy)}" r="${n(rad * (.6 + .4 * a))}" fill="#fff" opacity="${n(a > .7 ? 1 - (a - .7) / .3 : 1)}"/>`; });
+  return bag(r, P, id) + bub;
+};
+
+const ST = { crouch: 34, takeoff: 46, land: 72, hop1: 86, hop2: 104, settle: 124 }, JUMP = 125;
+const sendHeight = f => arc(f, ST.takeoff, ST.land, JUMP) + arc(f, ST.hop1, ST.hop1 + 12, 34) + arc(f, ST.hop2, ST.hop2 + 12, 24);
+CLIPS.send = (f, P, id) => {
+  const r = base(f);
+  const crouch = on(f, ST.crouch, ST.takeoff, 14, 220, 30, 500), y = sendHeight(f), air = clamp01(-y / JUMP);
+  const tAir = f > ST.takeoff && f < ST.land ? (f - ST.takeoff) / (ST.land - ST.takeoff) : -1;
+  const imp = impact(f, ST.land) + impact(f, ST.hop1 + 12, .5) + impact(f, ST.hop2 + 12, .35);
+  const preHop = .5 * on(f, ST.hop1 - 5, ST.hop1, 14, 300, 30, 500) + .35 * on(f, ST.hop2 - 5, ST.hop2, 14, 300, 30, 500);
+  squash(r, .15 * crouch + .16 * imp + .12 * preHop, tAir >= 0 ? .1 * Math.abs(1 - 2 * tAir) : 0);
+  const boom = sp(f, ST.takeoff, 9, 160), calm = sp(f, ST.land + 4, 14, 90), rest = sp(f, ST.settle, 16, 80);
+  r.chalkB = 'big'; r.chalkT = Math.max(0, boom * (1 - .55 * calm) * (1 - rest));
+  r.chalkSquash *= 1 - .18 * crouch + .12 * imp;
+  const up = sp(f, ST.takeoff - 2, 10, 150) * (1 - sp(f, ST.settle, 16, 120));
+  const wig = f > ST.land ? 12 * osc(f - ST.land, 20) * up : 0;
+  r.leftAng = lerp(r.leftAng, 232, up) + 12 * crouch - wig; r.rightAng = lerp(r.rightAng, -52, up) - 12 * crouch + wig;
+  r.leftBend = lerp(8, -6, up); r.rightBend = lerp(8, -6, up);
+  r.y = y + 8 * crouch;
+  r.rot += 3 * Math.sin((f - ST.land) / 7) * clamp01((f - ST.land) / 6) * (1 - rest);
+  r.feetY = -14 * air; r.feetSpread = -6 * air + 6 * crouch;
+  const happy = f >= ST.crouch + 4 && f < ST.settle + 8;
+  r.eyes = happy ? 'happy' : 'open';
+  r.blink = Math.max(blinkAt(f, 18), blinkAt(f, 140));
+  r.lookX = kf(f, [0, 28, ST.settle, N], [-2, 3, 3, -2]);
+  r.mouth = f >= ST.takeoff && f < ST.settle ? 'big' : f >= ST.crouch && f < ST.settle + 8 ? 'open' : 'smile';
+  r.blush = happy ? 1 : .65;
+  let fx = '';
+  const tC = (f - (ST.takeoff + 3)) / FPS, cols = [C.coral, C.mustard, C.lavender, C.body];
+  if (tC >= 0 && tC <= 1.5) for (let i = 0; i < 26; i++) {
+    const vx = (rnd(i, 5) - .5) * 700, vy = -(520 + rnd(i, 6) * 340), x = vx * tC, yy = -260 + vy * tC + 575 * tC * tC;
+    fx += `<rect x="-7" y="-4" width="14" height="8" rx="2" fill="${cols[i % 4]}" opacity="${n(tC > 1.1 ? 1 - (tC - 1.1) / .4 : 1)}" transform="translate(${n(x)},${n(yy)}) rotate(${n((rnd(i, 7) - .5) * 900 * tC)})"/>`;
+  }
+  const d = f - ST.land;
+  if (d >= 0 && d <= 18) { let g = ''; [-1, 1].forEach(s => [0, 1].forEach(j => g += `<circle cx="${n(s * (80 + 80 * (d / 18) + j * 22))}" cy="${n(140 - 14 * (d / 18) - j * 8)}" r="${n((14 - j * 4) * (1 + .6 * (d / 18)))}" fill="#fff"/>`)); fx += `<g opacity="${n(1 - d / 18)}">${g}</g>`; }
+  const tB = (f - ST.takeoff) / FPS;
+  if (tB >= 0 && tB <= 1.6) for (let i = 0; i < 34; i++) {
+    const a = -Math.PI / 2 + (rnd(i, 1) - .5) * Math.PI * 1.5, v = 260 + rnd(i, 2) * 420, dist = (v / 3.2) * (1 - Math.exp(-3.2 * tB));
+    const x = Math.cos(a) * dist, yy = sendHeight(ST.takeoff + 2) - 120 + Math.sin(a) * dist + 60 * tB * tB, rad = (4 + rnd(i, 3) * 9) * (1 - tB / 1.6);
+    fx += `<circle cx="${n(x)}" cy="${n(yy)}" r="${n(Math.max(0, rad))}" fill="#fff"/>`;
+  }
+  return fx + bag(r, P, id);
+};
+
+CLIPS.love = (f, P, id) => {
+  const r = base(f), crouch = on(f, 14, 26, 14, 260, 30, 500), love = on(f, 24, 124, 10, 140, 16, 120);
+  squash(r, .1 * crouch); r.chalkB = 'heart'; r.chalkT = love;
+  const hearty = f >= 26 && f < 128;
+  r.eyes = hearty ? 'heart' : 'open';
+  r.eyeScale = hearty ? Math.max(.05, sp(f, 26, 8, 220) * (1 - sp(f, 122, 14, 200))) : 1;
+  const sway = 6 * osc(f, 50) * love;
+  r.leftAng = lerp(r.leftAng, 212, love) + sway; r.rightAng = lerp(r.rightAng, -32, love) + sway;
+  r.leftBend = lerp(8, -10, love); r.rightBend = lerp(8, -10, love);
+  squash(r, .035 * Math.max(0, osc(f, 25)) * love);
+  r.blush = .65 + .35 * love; r.rot += 4 * osc(f, 50) * love; r.blink = blinkAt(f, 138);
+  let fl = '';
+  for (let i = 0; i < 7; i++) { const b = 36 + i * 12, a = (f - b) / 40; if (a < 0 || a > 1) continue;
+    const side = i % 2 ? 1 : -1, x = side * (60 + rnd(i, 1) * 50) + 10 * Math.sin(a * 6 + i), yy = -110 - a * 140, s = (8 + rnd(i, 2) * 6) * Math.min(1, a * 5);
+    fl += `<path d="${HEART}" fill="${C.heart}" transform="translate(${n(x)},${n(yy)}) scale(${n(s)})" opacity="${n(a > .7 ? 1 - (a - .7) / .3 : 1)}"/>`; }
+  return bag(r, P, id) + fl;
+};
+
+const WALL = 'M-270,170 L-270,62 Q-270,46 -254,46 L254,46 Q270,46 270,62 L270,170 Z';
+let PEEK_HOLES = '';
+for (let gx = -238; gx <= 238; gx += 48) for (const gy of [86, 132]) PEEK_HOLES += `<circle cx="${gx}" cy="${gy}" r="4" fill="${C.wallDark}"/>`;
+CLIPS.peek = (f, P, id) => {
+  const r = base(f), rise = on(f, 12, 116, 10, 120, 14, 140);
+  r.y = lerp(152, 4, rise);
+  const grip = on(f, 26, 110, 11, 200, 18, 220);
+  r.leftAng = lerp(120, 161, grip); r.rightAng = lerp(60, 19, grip); r.leftBend = 4; r.rightBend = -4; r.armsHidden = true;
+  r.lookX = kf(f, [0, 36, 46, 66, 76, 100, 110, N], [0, 0, -6, -6, 6, 6, 0, 0]);
+  r.rot += r.lookX * .5; r.brows = 'curious'; r.browAmt = rise; r.blink = blinkAt(f, 70);
+  r.chalkSquash *= 1 + .08 * impact(f, 24, .6);
+  return `<defs><clipPath id="above-${id}"><rect x="-300" y="-400" width="600" height="451"/></clipPath></defs>` + bag(r, P, id) +
+    `<path d="${WALL}" fill="${C.wall}"/>${PEEK_HOLES}` +
+    `<path d="M-150,110 C-140,92 -108,94 -106,112 C-104,128 -140,132 -150,110 Z" fill="${C.coral}"/>` +
+    `<path d="M106,140 C110,122 150,118 156,134 C160,148 120,156 106,140 Z" fill="${C.mustard}"/>` +
+    `<path d="M-40,92 C-34,78 -6,80 -4,94 C-2,106 -36,108 -40,92 Z" fill="${C.lavender}"/>` +
+    `<path d="M150,74 C156,64 176,66 178,76 C180,86 154,88 150,74 Z" fill="${C.body}"/>` +
+    `<path d="M-230,150 C-224,138 -200,140 -198,150 C-196,160 -226,162 -230,150 Z" fill="${C.body}"/>` +
+    `<path d="M20,150 C26,140 46,142 48,152 C50,160 22,162 20,150 Z" fill="${C.coral}"/>` +
+    `<g clip-path="url(#above-${id})">${armsLayer(r, P)}</g>`;
+};
+
+/* ---------- Reproductor: un solo reloj para todos los Crux visibles ---------- */
+const players = [];
+const io = new IntersectionObserver(es => es.forEach(e => { const p = players.find(p => p.el === e.target); if (p) p.visible = e.isIntersecting; }), { rootMargin: '80px' });
+class Player {
+  constructor(el, { clip, skin = SK.classic, still = 60, viewBox = '-270 -380 540 540', f = 0, then = null, fps30 = false }) {
+    Object.assign(this, { el, clip, P: skin, f: REDUCED ? still : f, still, then, fps30, lastDrawn: -1, visible: false, id: 'c' + players.length });
+    if (!el.getAttribute('viewBox')) el.setAttribute('viewBox', viewBox);
+    this.g = document.createElementNS(NS, 'g'); el.appendChild(this.g);
+    players.push(this); io.observe(el);
+    this.draw();
+  }
+  play(clip, from = 0, then = null) { this.clip = clip; this.f = REDUCED ? this.still : from; this.then = then; this.draw(); }
+  tick(dt) {
+    this.f += dt * FPS;
+    if (this.f >= N) { if (this.then) { const t = this.then; this.then = null; t(this); return; } this.f -= N; }
+    // las filas de Crux van a los 30 fps nativos del clip: menos trabajo, mismo dibujo
+    if (this.fps30 && Math.floor(this.f) === this.lastDrawn) return;
+    this.draw();
+  }
+  draw() { this.lastDrawn = Math.floor(this.f); this.g.innerHTML = CLIPS[this.clip](this.f, this.P, this.id, {}); }
+}
+const tickers = [];
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  if (!REDUCED) for (const p of players) if (p.visible && !p.frozen) p.tick(dt);
+  for (const t of tickers) t(dt, now);
+  requestAnimationFrame(loop);
+}
+
+/* ---------- Nav: Crux colgando del punto ---------- */
+const nav = document.getElementById('nav');
+const onScrollNav = () => nav.classList.toggle('solid', scrollY > 30);
+(() => {
+  const r = defaultRig();
+  Object.assign(r, { leftAng: 102, rightAng: 78, leftBend: 4, rightBend: 4, feetY: 6, feetSpread: -6, blush: .9 });
+  document.getElementById('miniCrux').innerHTML =
+    `<path d="M0,-196 L-80,-62 M0,-196 L80,-62" stroke="${SK.classic.cuff}" stroke-width="11" stroke-linecap="round" fill="none"/>` + bag(r, SK.classic, 'mini');
+})();
+
+/* ---------- Motas de magnesio ---------- */
+document.querySelectorAll('.wall').forEach((w, k) => {
+  for (let i = 0; i < 7; i++) {
+    const m = document.createElement('i'); m.className = 'mote';
+    const r = rnd(i, k + 3);
+    m.style.left = (8 + i * 13 + r * 6) + '%';
+    m.style.setProperty('--t', (12 + r * 10) + 's'); m.style.setProperty('--d', (-r * 20 - i * 2) + 's');
+    m.style.setProperty('--dx', ((r - .5) * 80) + 'px');
+    m.style.width = m.style.height = (3 + r * 4) + 'px';
+    w.appendChild(m);
+  }
+});
+
+/* ---------- HERO: el top. Send una vez → Love → Idle; tocar lo repite ---------- */
+const heroEl = document.getElementById('cruxHero');
+const afterSend = p => p.play('love', 14, q => q.play('idle', 0));
+const hero = new Player(heroEl, { clip: 'send', still: 140, then: afterSend });
+const heroWall = document.getElementById('heroWall'), bloom = document.getElementById('bloom'), topT = document.getElementById('topTitle');
+const cvs = document.getElementById('heroHoles'), ctx = cvs.getContext('2d');
+let sendEnd = 0, cleared = true;
+document.getElementById('heroCrux').addEventListener('click', () => { if (!REDUCED) { hero.frozen = false; hero.play('send', 24, afterSend); } });
+// #f=72 congela el top en ese frame (para revisar la coreografía)
+const dbg = /f=(\d+)/.exec(location.hash);
+if (dbg) { hero.frozen = true; hero.play('send', +dbg[1]); }
+function sizeCanvas() { const d = Math.min(2, devicePixelRatio || 1); cvs.width = cvs.clientWidth * d; cvs.height = cvs.clientHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); cleared = false; }
+function heroFx(now) {
+  // fs: frames desde el inicio del send, sigue contando después de que el clip pase a Love
+  let fs;
+  if (REDUCED) fs = 999;
+  else if (hero.clip === 'send') { fs = hero.f; sendEnd = now; }
+  else fs = N + (now - sendEnd) / 1000 * FPS;
+  const wr = heroWall.getBoundingClientRect(), sr = heroEl.getBoundingClientRect();
+  const cx = sr.left - wr.left + sr.width / 2, cy = sr.top - wr.top + sr.height * ((24 + 380) / 540);
+  const bl = eio(clamp01((fs - ST.takeoff) / 10)) * (1 - eio(clamp01((fs - 150) / 40)));
+  bloom.style.opacity = bl; bloom.style.setProperty('--bx', cx + 'px'); bloom.style.setProperty('--by', cy + 'px');
+  const tin = eio(clamp01((fs - ST.land) / 8)), tt = tin * (1 - eio(clamp01((fs - 190) / 16)));
+  topT.style.opacity = tt; topT.style.transform = `translateX(-50%) scale(${.95 + .05 * tin})`;
+  // pared de agujeros ondulando desde Crux tras la explosión (mismos agujeros que la pared, paso 48)
+  const W = cvs.clientWidth, H = cvs.clientHeight;
+  if (fs < ST.takeoff || fs > 200) { if (!cleared) { ctx.clearRect(0, 0, W, H); cleared = true; } return; }
+  cleared = false; ctx.clearRect(0, 0, W, H);
+  const R = (fs - ST.takeoff) * 30, fade = 1 - clamp01((fs - 150) / 50);
+  for (let x = 24; x < W; x += 48) for (let y = 24; y < H; y += 48) {
+    const d = Math.hypot(x - cx, y - cy);
+    const front = Math.exp(-Math.pow((d - R) / 70, 2)), behind = d < R ? Math.max(0, 1 - d / 900) : 0;
+    const a = (.55 * front + .22 * behind) * fade;
+    if (a < .01) continue;
+    ctx.fillStyle = `rgba(208,110,80,${a.toFixed(3)})`;
+    ctx.beginPath(); ctx.arc(x, y, 3.6 + 3 * front, 0, Math.PI * 2); ctx.fill();
+  }
+}
+tickers.push((dt, now) => { if (hero.visible) heroFx(now); });
+
+/* ---------- Pantallas de los tres pasos ---------- */
+let buildMiniRows = () => {};
+const holes = (id, x0, y0, x1, y1, step) => { let s = '';
+  for (let x = x0; x < x1; x += step) for (let y = y0; y < y1; y += step) s += `<circle cx="${x}" cy="${y}" r="2.6"/>`;
+  document.getElementById(id).innerHTML = s; };
+holes('holesA', 24, 70, 240, 330, 28); holes('holesB', 24, 70, 240, 330, 28); holes('holesC', 24, 24, 240, 420, 28);
+const timer = document.getElementById('timer'); let sec = 0;
+setInterval(() => { sec = (sec + 1) % 7; timer.textContent = '00:0' + sec; }, 1000);
+(() => {
+  // podio: plata, oro, bronce, con la cabeza de cada Crux encima
+  const head = (P, x, y, d) => `<g class="ava" style="--d:${d}s"><g transform="translate(${x},${y})"><circle r="17" fill="${P.body}"/><rect x="-17" y="-12" width="34" height="7" rx="3.5" fill="${P.cuff}"/><circle cx="-6" cy="3" r="2.3" fill="${P.eye}"/><circle cx="6" cy="3" r="2.3" fill="${P.eye}"/><path d="M-4,9 Q0,12 4,9" stroke="${P.eye}" stroke-width="1.8" fill="none" stroke-linecap="round"/></g></g>`;
+  const block = (x, h, fill, edge, num, d) => `<g class="riseb" style="--d:${d}s"><rect x="${x}" y="${270 - h}" width="60" height="${h}" rx="10" fill="${edge}"/><rect x="${x}" y="${270 - h}" width="60" height="${h - 6}" rx="10" fill="${fill}"/><text x="${x + 30}" y="${270 - h + 30}" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#1F2A3A">${num}</text></g>`;
+  document.getElementById('podium').innerHTML =
+    block(26, 92, '#C3CBD5', '#A2AEBC', 2, .15) + block(90, 132, '#D8C27E', '#B9A25A', 1, .3) + block(154, 66, '#C59674', '#A57858', 3, 0) +
+    head(SK.glaciar, 56, 158, .55) + `<g class="ava" style="--d:.75s"><circle cx="120" cy="118" r="23" fill="none" stroke="#D8C27E" stroke-width="4"/></g>` + head(SK.classic, 120, 118, .7) + head(SK.flamenco, 184, 184, .4);
+  const row = (y, P, name, pts) => `<rect x="22" y="${y}" width="196" height="36" rx="12" fill="#fff"/><circle cx="40" cy="${y + 18}" r="6" fill="${P.body}"/><text x="54" y="${y + 23}" font-family="Nunito" font-weight="800" font-size="13" fill="#1F2A3A">${name}</text><text x="204" y="${y + 24}" text-anchor="end" font-family="Baloo 2" font-weight="800" font-size="16" fill="#1F2A3A">${pts}</text>`;
+  buildMiniRows = you => { document.getElementById('miniRows').innerHTML = row(290, SK.classic, '1  ' + you, 135) + row(332, SK.glaciar, '2  Pau', 128) + row(374, SK.flamenco, '3  Laia', 120); };
+})();
+
+/* ---------- LIGA: líneas reto a reto y el aro de oro cambiando de manos ---------- */
+const LEAGUE = [
+  { name: 'Tú', col: SK.classic.body, pts: [0, 15, 30, 65, 75, 110, 135] },
+  { name: 'Pau', col: SK.glaciar.body, pts: [0, 30, 55, 60, 85, 115, 128] },
+  { name: 'Laia', col: SK.flamenco.body, pts: [0, 20, 35, 58, 80, 95, 120] },
+  { name: 'Núria', col: SK.alpine.body, pts: [0, 10, 40, 50, 90, 105, 115] },
+];
+let T = {};
+const chart = document.getElementById('chart'), rankEl = document.getElementById('rank'), retoN = document.getElementById('retoN');
+const X = i => 40 + i * 88, Y = v => 268 - v * 1.75;
+let grid = '';
+for (let v = 0; v <= 140; v += 35) grid += `<line x1="40" x2="568" y1="${Y(v)}" y2="${Y(v)}" stroke="#E9EDF1" stroke-width="2"/><text x="30" y="${Y(v) + 4}" text-anchor="end" font-family="Nunito" font-weight="800" font-size="11" fill="#556072">${v}</text>`;
+for (let i = 1; i <= 6; i++) grid += `<text x="${X(i)}" y="292" text-anchor="middle" font-family="Nunito" font-weight="800" font-size="11" fill="#556072">${i}</text>`;
+chart.innerHTML = grid + LEAGUE.map((p, i) => `<path id="ln${i}" fill="none" stroke="${p.col}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle id="hd${i}" r="7" fill="${p.col}"/>`).join('') +
+  `<circle id="ring" r="15" fill="none" stroke="#D8C27E" stroke-width="5"/>`;
+const rows = LEAGUE.map(p => { const r = document.createElement('div'); r.className = 'row';
+  r.innerHTML = `<span class="pos">–</span><i class="dot" style="background:${p.col}"></i><span class="name">${p.name}</span><span class="score">0</span>`; rankEl.appendChild(r); return r; });
+let lgT = 0, lgRun = false; const ring = { x: X(0), y: Y(0) };
+const valAt = (p, s) => { const i = Math.floor(s); return i >= 6 ? p.pts[6] : lerp(p.pts[i], p.pts[i + 1], eio(s - i)); };
+function drawLeague(s) {
+  const heads = LEAGUE.map((p, k) => {
+    let d = `M${X(0)},${Y(0)}`; const i = Math.floor(s);
+    for (let j = 1; j <= Math.min(i, 6); j++) d += ` L${X(j)},${Y(p.pts[j])}`;
+    const hx = i >= 6 ? X(6) : lerp(X(i), X(i + 1), eio(s - i)), hy = Y(valAt(p, s));
+    if (i < 6) d += ` L${n(hx)},${n(hy)}`;
+    document.getElementById('ln' + k).setAttribute('d', d);
+    const h = document.getElementById('hd' + k); h.setAttribute('cx', n(hx)); h.setAttribute('cy', n(hy));
+    return { k, x: hx, y: hy, v: valAt(p, s) };
+  });
+  const order = [...heads].sort((a, b) => b.v - a.v), lead = order[0];
+  ring.x += (lead.x - ring.x) * .2; ring.y += (lead.y - ring.y) * .2;
+  const re = document.getElementById('ring'); re.setAttribute('cx', n(ring.x)); re.setAttribute('cy', n(ring.y)); re.style.opacity = s > .2 ? 1 : 0;
+  order.forEach((h, idx) => {
+    const r = rows[h.k]; r.style.transform = `translateY(${idx * 70}px)`;
+    const pos = r.querySelector('.pos'); pos.textContent = s > .2 ? idx + 1 : '–'; pos.className = 'pos' + (s > .2 && idx < 3 ? ' p' + (idx + 1) : '');
+    r.querySelector('.score').textContent = Math.round(h.v);
+  });
+  retoN.textContent = T.reto + ' ' + Math.min(6, Math.floor(s));
+}
+/* ---------- Idiomas (los mismos 8 de la app, con sus palabras: TOP, SALIDA, skins…) ---------- */
+const L = {
+  es: { name: 'Español', h1: [['Pon', 'una', 'vía.'], ['Que', 'la', 'suden', 'tus', 'amigos.']],
+    band: ['¡TOP!', 'RETO NUEVO', 'FLASH ×1,5', 'KO', 'LIGA', 'VOTO SECRETO', '¡ENCADENADO!', '2 VIDAS'],
+    kicker: 'Escalada con tus amigos', lead: 'Os turnáis poniendo vías como reto, os grabáis intentándolas y quien más sube gana la liga del mes.',
+    chk1: 'Gratis', chk2: 'Con tu grupo del roco', chk3: 'iOS y Android', soon: 'Pronto', navSoon: 'Muy pronto', nav1: 'Cómo se juega', nav2: 'La liga', top: '¡TOP!',
+    howE: 'Cómo se juega', howT: 'Tres pasos. Cero excusas.', howS: 'Solo necesitas a tus amigos y un rocódromo.',
+    s1t: 'Pon una vía', s1p: 'Marca una vía del roco y súbela. Ya es un reto para todo el grupo.',
+    s2t: 'Tus amigos la intentan', s2p: 'Dos vidas cada uno. Grabar el vídeo es el intento: aquí nadie hace trampa.',
+    s3t: 'Gana la liga', s3p: 'Cada top suma. A final de mes, quien más ha subido se lleva la liga.',
+    newCh: 'Reto nuevo', start: 'SALIDA', topL: 'TOP', route: 'La azul del desplome', routeMeta: 'Vía del roco · 2 vidas', publish: 'Publicar reto',
+    published: '¡Reto publicado!', attempt: 'Intento 1 de 2', league: 'Liga del mes', you: 'Tú',
+    lgE: 'Una liga cada mes', lgT: 'Se gana contra tus amigos, no contra la pared.', lgS: 'Todas las vías valen lo mismo. Gana quien más sube, y el grupo vota si un top es de verdad.',
+    chart: 'Liga del mes · reto a reto', reto: 'Reto', rank: 'Clasificación', replay: 'Ver otra vez',
+    cruxE: 'Conoce a Crux', cruxT: 'Cada uno, con su Crux.', cruxS: 'Una bolsa de magnesio con mucho carácter. Gana skins jugando y lúcelas delante de tu grupo.',
+    finE: 'Gratis · muy pronto en iOS y Android', finT: '¿Quién pone la próxima vía?', finS: 'Monta el grupo con los de tu roco. Es gratis, para todos.', lang: 'Idioma' },
+  en: { name: 'English', h1: [['Set', 'a', 'route.'], ['Watch', 'your', 'friends', 'sweat.']],
+    band: ['TOP!', 'NEW CHALLENGE', 'FLASH ×1.5', 'KO', 'LEAGUE', 'SECRET VOTE', 'SENT IT!', '2 LIVES'],
+    kicker: 'Climbing with your friends', lead: 'Take turns setting routes as challenges, film your attempts, and whoever climbs the most wins the monthly league.',
+    chk1: 'Free', chk2: 'With your gym crew', chk3: 'iOS & Android', soon: 'Soon', navSoon: 'Coming soon', nav1: 'How to play', nav2: 'The league', top: 'TOP!',
+    howE: 'How to play', howT: 'Three steps. Zero excuses.', howS: 'All you need is your friends and a climbing gym.',
+    s1t: 'Set a route', s1p: 'Mark a route at your gym and climb it. Now it’s a challenge for the whole group.',
+    s2t: 'Your friends try it', s2p: 'Two lives each. Filming is the attempt: nobody gets to cheat.',
+    s3t: 'Win the league', s3p: 'Every top counts. At the end of the month, whoever climbed the most takes the league.',
+    newCh: 'New challenge', start: 'START', topL: 'TOP', route: 'The blue on the overhang', routeMeta: 'Gym route · 2 lives', publish: 'Publish challenge',
+    published: 'Challenge up!', attempt: 'Attempt 1 of 2', league: 'Monthly league', you: 'You',
+    lgE: 'A league every month', lgT: 'You beat your friends, not the wall.', lgS: 'Every route is worth the same. Whoever climbs the most wins, and the group votes on whether a top is legit.',
+    chart: 'Monthly league · challenge by challenge', reto: 'Challenge', rank: 'Standings', replay: 'Replay',
+    cruxE: 'Meet Crux', cruxT: 'Everyone gets their own Crux.', cruxS: 'A chalk bag with a lot of personality. Earn skins by playing and show them off to your group.',
+    finE: 'Free · coming soon to iOS and Android', finT: 'Who sets the next route?', finS: 'Start a group with your gym crew. It’s free, for everyone.', lang: 'Language' },
+  ca: { name: 'Català', h1: [['Posa', 'una', 'via.'], ['Que', 'la', 'suïn', 'els', 'teus', 'amics.']],
+    band: ['TOP!', 'REPTE NOU', 'FLASH ×1,5', 'KO', 'LLIGA', 'VOT SECRET', 'ENCADENAT!', '2 VIDES'],
+    kicker: 'Escalada amb els teus amics', lead: 'Us torneu posant vies com a repte, us graveu intentant-les i qui més puja guanya la lliga del mes.',
+    chk1: 'Gratuït', chk2: 'Amb la colla del rocòdrom', chk3: 'iOS i Android', soon: 'Aviat', navSoon: 'Molt aviat', nav1: 'Com es juga', nav2: 'La lliga', top: 'TOP!',
+    howE: 'Com es juga', howT: 'Tres passos. Zero excuses.', howS: 'Només necessites els teus amics i un rocòdrom.',
+    s1t: 'Posa una via', s1p: 'Marca una via del rocòdrom i puja-la. Ja és un repte per a tot el grup.',
+    s2t: 'Els teus amics la proven', s2p: 'Dues vides cadascú. Gravar el vídeo és l’intent: aquí ningú fa trampa.',
+    s3t: 'Guanya la lliga', s3p: 'Cada top suma. A final de mes, qui més ha pujat s’endú la lliga.',
+    newCh: 'Repte nou', start: 'SORTIDA', topL: 'TOP', route: 'La blava del desplom', routeMeta: 'Via del rocòdrom · 2 vides', publish: 'Publicar repte',
+    published: 'Repte publicat!', attempt: 'Intent 1 de 2', league: 'Lliga del mes', you: 'Tu',
+    lgE: 'Una lliga cada mes', lgT: 'Es guanya contra els amics, no contra la paret.', lgS: 'Totes les vies valen el mateix. Guanya qui més puja, i el grup vota si un top és de veritat.',
+    chart: 'Lliga del mes · repte a repte', reto: 'Repte', rank: 'Classificació', replay: 'Torna-ho a veure',
+    cruxE: 'Coneix en Crux', cruxT: 'Cadascú, amb el seu Crux.', cruxS: 'Una bossa de magnesi amb molt de caràcter. Guanya skins jugant i llueix-les davant del teu grup.',
+    finE: 'Gratuït · molt aviat a iOS i Android', finT: 'Qui posa la propera via?', finS: 'Munta el grup amb la colla del rocòdrom. És gratuït, per a tothom.', lang: 'Idioma' },
+  fr: { name: 'Français', h1: [['Ouvre', 'une', 'voie.'], ['Que', 'tes', 'potes', 'en', 'bavent.']],
+    band: ['TOP !', 'NOUVEAU DÉFI', 'FLASH ×1,5', 'KO', 'LIGUE', 'VOTE SECRET', 'ENCHAÎNÉ !', '2 VIES'],
+    kicker: 'L’escalade entre potes', lead: 'Chacun votre tour, vous ouvrez des voies en défi, vous vous filmez en les tentant, et celui qui grimpe le plus gagne la ligue du mois.',
+    chk1: 'Gratuit', chk2: 'Avec ta bande de la salle', chk3: 'iOS et Android', soon: 'Bientôt', navSoon: 'Bientôt dispo', nav1: 'Comment jouer', nav2: 'La ligue', top: 'TOP !',
+    howE: 'Comment jouer', howT: 'Trois étapes. Zéro excuse.', howS: 'Il te faut juste tes potes et une salle d’escalade.',
+    s1t: 'Ouvre une voie', s1p: 'Choisis une voie de ta salle et grimpe-la. C’est déjà un défi pour tout le groupe.',
+    s2t: 'Tes potes la tentent', s2p: 'Deux vies chacun. Se filmer, c’est l’essai : impossible de tricher.',
+    s3t: 'Gagne la ligue', s3p: 'Chaque top compte. À la fin du mois, celui qui a le plus grimpé remporte la ligue.',
+    newCh: 'Nouveau défi', start: 'DÉPART', topL: 'TOP', route: 'La bleue du dévers', routeMeta: 'Voie de la salle · 2 vies', publish: 'Publier le défi',
+    published: 'Défi publié !', attempt: 'Essai 1 sur 2', league: 'Ligue du mois', you: 'Toi',
+    lgE: 'Une ligue chaque mois', lgT: 'On gagne contre ses potes, pas contre le mur.', lgS: 'Toutes les voies valent pareil. Celui qui grimpe le plus gagne, et le groupe vote si un top est vrai.',
+    chart: 'Ligue du mois · défi par défi', reto: 'Défi', rank: 'Classement', replay: 'Revoir',
+    cruxE: 'Voici Crux', cruxT: 'À chacun son Crux.', cruxS: 'Un sac à magnésie plein de caractère. Gagne des skins en jouant et montre-les à ton groupe.',
+    finE: 'Gratuit · bientôt sur iOS et Android', finT: 'Qui ouvre la prochaine voie ?', finS: 'Crée le groupe avec ta bande de la salle. C’est gratuit, pour tout le monde.', lang: 'Langue' },
+  de: { name: 'Deutsch', h1: [['Setz', 'eine', 'Route.'], ['Lass', 'deine', 'Freunde', 'schwitzen.']],
+    band: ['TOP!', 'NEUE CHALLENGE', 'FLASH ×1,5', 'KO', 'LIGA', 'GEHEIME ABSTIMMUNG', 'DURCHGESTIEGEN!', '2 LEBEN'],
+    kicker: 'Klettern mit deinen Freunden', lead: 'Ihr setzt abwechselnd Routen als Challenge, filmt eure Versuche, und wer am meisten schafft, gewinnt die Liga des Monats.',
+    chk1: 'Kostenlos', chk2: 'Mit deiner Hallen-Crew', chk3: 'iOS & Android', soon: 'Bald', navSoon: 'Bald da', nav1: 'So geht’s', nav2: 'Die Liga', top: 'TOP!',
+    howE: 'So geht’s', howT: 'Drei Schritte. Null Ausreden.', howS: 'Du brauchst nur deine Freunde und eine Kletterhalle.',
+    s1t: 'Setz eine Route', s1p: 'Markier eine Route in deiner Halle und klettere sie. Schon ist sie eine Challenge für die ganze Gruppe.',
+    s2t: 'Deine Freunde versuchen sie', s2p: 'Zwei Leben pro Person. Filmen ist der Versuch: Schummeln unmöglich.',
+    s3t: 'Gewinn die Liga', s3p: 'Jedes Top zählt. Am Monatsende holt sich die Liga, wer am meisten geschafft hat.',
+    newCh: 'Neue Challenge', start: 'START', topL: 'TOP', route: 'Die Blaue am Überhang', routeMeta: 'Hallenroute · 2 Leben', publish: 'Challenge posten',
+    published: 'Challenge live!', attempt: 'Versuch 1 von 2', league: 'Monatsliga', you: 'Du',
+    lgE: 'Jeden Monat eine Liga', lgT: 'Du kletterst gegen deine Freunde, nicht gegen die Wand.', lgS: 'Alle Routen zählen gleich viel. Wer am meisten schafft, gewinnt, und die Gruppe stimmt ab, ob ein Top echt ist.',
+    chart: 'Monatsliga · Challenge für Challenge', reto: 'Challenge', rank: 'Tabelle', replay: 'Nochmal',
+    cruxE: 'Das ist Crux', cruxT: 'Jeder mit seinem Crux.', cruxS: 'Ein Chalkbag mit viel Charakter. Verdien Skins beim Spielen und zeig sie deiner Gruppe.',
+    finE: 'Kostenlos · bald für iOS und Android', finT: 'Wer setzt die nächste Route?', finS: 'Gründe die Gruppe mit deiner Hallen-Crew. Kostenlos, für alle.', lang: 'Sprache' },
+  it: { name: 'Italiano', h1: [['Traccia', 'una', 'via.'], ['Che', 'i', 'tuoi', 'amici', 'sudino.']],
+    band: ['TOP!', 'NUOVA SFIDA', 'FLASH ×1,5', 'KO', 'LEGA', 'VOTO SEGRETO', 'CHIUSA!', '2 VITE'],
+    kicker: 'Arrampicata con i tuoi amici', lead: 'A turno tracciate vie come sfida, vi filmate mentre le provate e chi sale di più vince la lega del mese.',
+    chk1: 'Gratis', chk2: 'Con il tuo gruppo della palestra', chk3: 'iOS e Android', soon: 'Presto', navSoon: 'In arrivo', nav1: 'Come si gioca', nav2: 'La lega', top: 'TOP!',
+    howE: 'Come si gioca', howT: 'Tre passi. Zero scuse.', howS: 'Ti servono solo i tuoi amici e una palestra di arrampicata.',
+    s1t: 'Traccia una via', s1p: 'Segna una via della palestra e salila. È già una sfida per tutto il gruppo.',
+    s2t: 'I tuoi amici la provano', s2p: 'Due vite a testa. Filmarsi è il tentativo: qui nessuno bara.',
+    s3t: 'Vinci la lega', s3p: 'Ogni top conta. A fine mese, chi è salito di più si prende la lega.',
+    newCh: 'Nuova sfida', start: 'PARTENZA', topL: 'TOP', route: 'La blu dello strapiombo', routeMeta: 'Via della palestra · 2 vite', publish: 'Pubblica sfida',
+    published: 'Sfida pubblicata!', attempt: 'Tentativo 1 di 2', league: 'Lega del mese', you: 'Tu',
+    lgE: 'Una lega ogni mese', lgT: 'Si vince contro gli amici, non contro la parete.', lgS: 'Tutte le vie valgono uguale. Vince chi sale di più, e il gruppo vota se un top è vero.',
+    chart: 'Lega del mese · sfida per sfida', reto: 'Sfida', rank: 'Classifica', replay: 'Rivedi',
+    cruxE: 'Ecco Crux', cruxT: 'A ognuno il suo Crux.', cruxS: 'Un sacchetto di magnesite con tanto carattere. Vinci skin giocando e sfoggiale con il tuo gruppo.',
+    finE: 'Gratis · presto su iOS e Android', finT: 'Chi traccia la prossima via?', finS: 'Crea il gruppo con quelli della tua palestra. È gratis, per tutti.', lang: 'Lingua' },
+  pt: { name: 'Português', h1: [['Marca', 'uma', 'via.'], ['Que', 'os', 'teus', 'amigos', 'suem.']],
+    band: ['TOP!', 'NOVO DESAFIO', 'FLASH ×1,5', 'KO', 'LIGA', 'VOTO SECRETO', 'ENCADEADA!', '2 VIDAS'],
+    kicker: 'Escalada com os teus amigos', lead: 'À vez, marcam vias como desafio, filmam-se a tentá-las e quem sobe mais ganha a liga do mês.',
+    chk1: 'Grátis', chk2: 'Com o teu grupo do ginásio', chk3: 'iOS e Android', soon: 'Em breve', navSoon: 'Em breve', nav1: 'Como se joga', nav2: 'A liga', top: 'TOP!',
+    howE: 'Como se joga', howT: 'Três passos. Zero desculpas.', howS: 'Só precisas dos teus amigos e de um ginásio de escalada.',
+    s1t: 'Marca uma via', s1p: 'Escolhe uma via do ginásio e sobe-a. Já é um desafio para todo o grupo.',
+    s2t: 'Os teus amigos tentam', s2p: 'Duas vidas cada um. Filmar é a tentativa: aqui ninguém faz batota.',
+    s3t: 'Ganha a liga', s3p: 'Cada top conta. No fim do mês, quem subiu mais leva a liga.',
+    newCh: 'Novo desafio', start: 'PARTIDA', topL: 'TOP', route: 'A azul do extraprumo', routeMeta: 'Via do ginásio · 2 vidas', publish: 'Publicar desafio',
+    published: 'Desafio publicado!', attempt: 'Tentativa 1 de 2', league: 'Liga do mês', you: 'Tu',
+    lgE: 'Uma liga por mês', lgT: 'Ganha-se contra os amigos, não contra a parede.', lgS: 'Todas as vias valem o mesmo. Ganha quem sobe mais, e o grupo vota se um top é a sério.',
+    chart: 'Liga do mês · desafio a desafio', reto: 'Desafio', rank: 'Classificação', replay: 'Ver de novo',
+    cruxE: 'Conhece o Crux', cruxT: 'Cada um com o seu Crux.', cruxS: 'Um saco de magnésio com muita personalidade. Ganha skins a jogar e mostra-as ao teu grupo.',
+    finE: 'Grátis · em breve no iOS e Android', finT: 'Quem marca a próxima via?', finS: 'Cria o grupo com o pessoal do ginásio. É grátis, para todos.', lang: 'Idioma' },
+  nl: { name: 'Nederlands', h1: [['Zet', 'een', 'route.'], ['Laat', 'je', 'vrienden', 'zweten.']],
+    band: ['TOP!', 'NIEUWE CHALLENGE', 'FLASH ×1,5', 'KO', 'COMPETITIE', 'GEHEIME STEMMING', 'GEKLOMMEN!', '2 LEVENS'],
+    kicker: 'Klimmen met je vrienden', lead: 'Om de beurt zetten jullie routes uit als challenge, filmen jullie je pogingen, en wie het meest klimt wint de maandcompetitie.',
+    chk1: 'Gratis', chk2: 'Met je klimhal-crew', chk3: 'iOS & Android', soon: 'Binnenkort', navSoon: 'Binnenkort', nav1: 'Zo speel je', nav2: 'De competitie', top: 'TOP!',
+    howE: 'Zo speel je', howT: 'Drie stappen. Nul excuses.', howS: 'Je hebt alleen je vrienden en een klimhal nodig.',
+    s1t: 'Zet een route', s1p: 'Kies een route in je hal en klim hem. Nu is het een challenge voor de hele groep.',
+    s2t: 'Je vrienden proberen het', s2p: 'Twee levens per persoon. Filmen is de poging: valsspelen kan niet.',
+    s3t: 'Win de competitie', s3p: 'Elke top telt. Aan het eind van de maand wint wie het meest heeft geklommen.',
+    newCh: 'Nieuwe challenge', start: 'START', topL: 'TOP', route: 'De blauwe in de overhang', routeMeta: 'Halroute · 2 levens', publish: 'Challenge plaatsen',
+    published: 'Gepubliceerd!', attempt: 'Poging 1 van 2', league: 'Maandcompetitie', you: 'Jij',
+    lgE: 'Elke maand een competitie', lgT: 'Je wint van je vrienden, niet van de muur.', lgS: 'Alle routes zijn evenveel waard. Wie het meest klimt wint, en de groep stemt of een top echt is.',
+    chart: 'Maandcompetitie · challenge per challenge', reto: 'Challenge', rank: 'Stand', replay: 'Opnieuw',
+    cruxE: 'Maak kennis met Crux', cruxT: 'Iedereen zijn eigen Crux.', cruxS: 'Een pofzak met veel karakter. Verdien skins door te spelen en laat ze zien aan je groep.',
+    finE: 'Gratis · binnenkort op iOS en Android', finT: 'Wie zet de volgende route?', finS: 'Start een groep met je klimhal-crew. Gratis, voor iedereen.', lang: 'Taal' },
+};
+// Banderas dibujadas (los emoji de bandera no se ven en Windows); la senyera, como en la app.
+const stripes = (dir, cols, w) => cols.map((c, i) => {
+  const a = w ? w.slice(0, i).reduce((x, y) => x + y, 0) : i * 9 / cols.length, s = w ? w[i] : 9 / cols.length;
+  return dir === 'v' ? `<rect x="${a}" width="${s + .02}" height="6" fill="${c}"/>` : `<rect y="${a * 6 / 9}" width="9" height="${s * 6 / 9 + .02}" fill="${c}"/>`;
+}).join('');
+let flagN = 0;
+const FLAGS = {
+  es: () => stripes('h', ['#AA151B', '#F1BF00', '#AA151B'], [2.25, 4.5, 2.25]),
+  fr: () => stripes('v', ['#0055A4', '#FFFFFF', '#EF4135']),
+  de: () => stripes('h', ['#000000', '#DD0000', '#FFCE00']),
+  it: () => stripes('v', ['#009246', '#FFFFFF', '#CE2B37']),
+  nl: () => stripes('h', ['#AE1C28', '#FFFFFF', '#21468B']),
+  pt: () => stripes('v', ['#006600', '#FF0000'], [3.6, 5.4]) + `<circle cx="3.6" cy="3" r="1.25" fill="#FFCC00"/><circle cx="3.6" cy="3" r=".8" fill="#FF0000"/><rect x="3.25" y="2.55" width=".7" height=".9" rx=".25" fill="#fff"/>`,
+  ca: () => `<rect width="9" height="6" fill="#FCDD09"/>` + [0, 1, 2, 3].map(i => `<rect y="${(i * 2 + 1) * 6 / 9}" width="9" height="${6 / 9}" fill="#DA121A"/>`).join(''),
+  en: () => { const id = 'uk' + flagN++;
+    return `<g transform="scale(.15,.2)"><clipPath id="${id}"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#${id})" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g>`; },
+};
+const flag = c => `<svg viewBox="0 0 9 6" preserveAspectRatio="none" aria-hidden="true">${FLAGS[c]()}</svg>`;
+const CODES = Object.keys(L);
+const langEl = document.getElementById('lang'), langBtn = document.getElementById('langBtn'), langMenu = document.getElementById('langMenu');
+langMenu.innerHTML = CODES.map(c => `<button role="option" data-l="${c}" lang="${c}"><span class="flag">${flag(c)}</span>${L[c].name}</button>`).join('');
+const fit = el => { // encoge los textos de las pantallas para que quepan en cualquier idioma
+  const max = +el.dataset.fit; if (!el.dataset.fs) el.dataset.fs = el.getAttribute('font-size');
+  let fs = +el.dataset.fs; el.setAttribute('font-size', fs);
+  try { while (fs > 8 && el.getComputedTextLength() > max) { fs -= .5; el.setAttribute('font-size', fs); } } catch (e) {}
+};
+function setLang(code, save) {
+  T = L[code]; document.documentElement.lang = code;
+  document.querySelectorAll('[data-i18n]').forEach(el => { const v = T[el.dataset.i18n]; if (v != null) el.textContent = v; });
+  const h1 = document.getElementById('h1'); let i = 0;
+  h1.setAttribute('aria-label', T.h1.map(l => l.join(' ')).join(' '));
+  h1.classList.toggle('long', T.h1.flat().join(' ').length > 38);
+  h1.innerHTML = T.h1.map((line, li) => line.map((w, wi) => `<span class="w${li === 0 && wi === line.length - 1 ? ' blue' : ''}" style="--i:${i++}">${w}</span>`).join(' ')).join('<br>');
+  const cls = ['c', '', 'l', '', 'm', '', 'c', ''], band = T.band.map((w, k) => `<span class="${cls[k]}">${w}</span>`).join('');
+  document.getElementById('bandTrack').innerHTML = band + band;
+  document.querySelector('meta[name=description]').setAttribute('content', T.lead);
+  langBtn.setAttribute('aria-label', T.lang);
+  document.getElementById('langFlag').innerHTML = flag(code);
+  document.getElementById('langCode').textContent = code.toUpperCase();
+  langMenu.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.l === code));
+  rows[0].querySelector('.name').textContent = T.you;
+  buildMiniRows(T.you);
+  retoN.textContent = T.reto + ' ' + retoN.textContent.replace(/\D/g, '');
+  document.querySelectorAll('[data-fit]').forEach(fit);
+  if (save) { try { localStorage.setItem('lang', code); } catch (e) {}
+    const u = new URL(location.href); u.searchParams.set('lang', code); history.replaceState(null, '', u); }
+}
+function initialLang() {
+  const q = new URLSearchParams(location.search).get('lang'); if (L[q]) return q;
+  try { const s = localStorage.getItem('lang'); if (L[s]) return s; } catch (e) {}
+  for (const l of navigator.languages || [navigator.language]) { const c = (l || '').slice(0, 2).toLowerCase(); if (L[c]) return c; }
+  return 'en';
+}
+langBtn.addEventListener('click', e => { e.stopPropagation(); const o = langEl.classList.toggle('open'); langBtn.setAttribute('aria-expanded', o); });
+langMenu.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; setLang(b.dataset.l, true); langEl.classList.remove('open'); langBtn.setAttribute('aria-expanded', false); });
+document.addEventListener('click', e => { if (!langEl.contains(e.target)) { langEl.classList.remove('open'); langBtn.setAttribute('aria-expanded', false); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') langEl.classList.remove('open'); });
+setLang(initialLang(), false);
+if (document.fonts) document.fonts.ready.then(() => document.querySelectorAll('[data-fit]').forEach(fit));
+
+drawLeague(REDUCED ? 6 : 0);
+const startLeague = () => { if (REDUCED) { drawLeague(6); return; } lgT = 0; lgRun = true; };
+tickers.push(dt => { if (!lgRun) return; lgT += dt; const s = Math.min(6, Math.max(0, (lgT - .3) / .75)); drawLeague(s); if (s >= 6 && lgT > 6) lgRun = false; });
+new IntersectionObserver((es, ob) => es.forEach(e => { if (e.isIntersecting) { startLeague(); ob.disconnect(); } }), { threshold: .45 }).observe(document.getElementById('chartCard'));
+document.getElementById('replay').addEventListener('click', startLeague);
+
+/* ---------- Fila de Crux: todas las skins, cada uno a lo suyo ---------- */
+const track = document.getElementById('cruxTrack');
+const nextClip = (p, k) => {
+  const pick = rnd(k, players.length + Math.floor(performance.now() / 997));
+  const clip = pick < .3 ? 'love' : pick < .55 ? 'wave' : 'idle';
+  p.play(clip, clip === 'love' ? 14 : 0, q => nextClip(q, k + 7));
+};
+[...SKINS, ...SKINS].forEach((s, i) => {
+  const svg = document.createElementNS(NS, 'svg'); track.appendChild(svg);
+  const clip = ['love', 'idle', 'wave'][i % 3];
+  const p = new Player(svg, { clip, skin: s, still: 60, viewBox: '-200 -300 400 450', f: rnd(i, 2) * 110, fps30: true, then: q => nextClip(q, i) });
+});
+
+/* ---------- PEEK ---------- */
+new Player(document.getElementById('cruxPeek'), { clip: 'peek', still: 60 });
+
+/* ---------- Revelado al hacer scroll ---------- */
+const rio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); rio.unobserve(e.target); } }), { threshold: .15, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('[data-reveal]').forEach(el => rio.observe(el));
+
+addEventListener('scroll', onScrollNav, { passive: true }); onScrollNav();
+addEventListener('resize', sizeCanvas); sizeCanvas();
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
