@@ -13,7 +13,7 @@ Audience and job: a climber who got the link from a friend at their gym, on a ph
 Proof: real app screens captured from a backend-free mock build (sample data), the app's real scoring numbers, live Crux.
 Constraints: static files on GitHub Pages; 8 languages with auto-detect; calm motion, no bounces; nothing fabricated (no user counts, testimonials, store badges).
 Memorable moment: one phone stays pinned while the page changes colour behind it, circuit by circuit, from white to black.
-Unresolved: the TestFlight link was taken from the app repo's testflight.md and awaits Marc's confirmation; Android date unknown.
+Resolved: the TestFlight link (from the app repo's testflight.md) was confirmed by Marc on 2026-11-18. Unresolved: Android date unknown.
 Direction choice: the decision page went unanswered for about an hour, so the build proceeded unattended on the assigned direction.
 
 ## Direction contract

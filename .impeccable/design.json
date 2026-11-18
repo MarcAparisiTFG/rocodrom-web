@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-18T23:30:00Z",
+  "title": "Design System: rocodrom.com",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Ink",
+        "canonical": "#14171C",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 261)",
+          "oklch(27.0% 0.006 261)",
+          "oklch(39.0% 0.009 261)",
+          "oklch(51.0% 0.011 261)",
+          "oklch(63.0% 0.011 261)",
+          "oklch(75.0% 0.010 261)",
+          "oklch(86.0% 0.008 261)",
+          "oklch(95.0% 0.006 261)"
+        ]
+      },
+      "chalk": {
+        "role": "primary",
+        "displayName": "Chalk",
+        "canonical": "#F4F6F8",
+        "tonalRamp": [
+          "oklch(15.0% 0.001 248)",
+          "oklch(27.0% 0.002 248)",
+          "oklch(39.0% 0.003 248)",
+          "oklch(51.0% 0.003 248)",
+          "oklch(63.0% 0.003 248)",
+          "oklch(75.0% 0.003 248)",
+          "oklch(86.0% 0.002 248)",
+          "oklch(95.0% 0.002 248)"
+        ]
+      },
+      "c1-blanco": {
+        "role": "secondary",
+        "displayName": "Blanco",
+        "canonical": "#F4F6F8",
+        "tonalRamp": [
+          "oklch(15.0% 0.001 248)",
+          "oklch(27.0% 0.002 248)",
+          "oklch(39.0% 0.003 248)",
+          "oklch(51.0% 0.003 248)",
+          "oklch(63.0% 0.003 248)",
+          "oklch(75.0% 0.003 248)",
+          "oklch(86.0% 0.002 248)",
+          "oklch(95.0% 0.002 248)"
+        ]
+      },
+      "c2-verde": {
+        "role": "secondary",
+        "displayName": "Verde",
+        "canonical": "#5FBF7A",
+        "tonalRamp": [
+          "oklch(15.0% 0.042 151)",
+          "oklch(27.0% 0.076 151)",
+          "oklch(39.0% 0.110 151)",
+          "oklch(51.0% 0.136 151)",
+          "oklch(63.0% 0.136 151)",
+          "oklch(75.0% 0.127 151)",
+          "oklch(86.0% 0.096 151)",
+          "oklch(95.0% 0.071 151)"
+        ]
+      },
+      "c3-azul": {
+        "role": "secondary",
+        "displayName": "Azul",
+        "canonical": "#4F8AD9",
+        "tonalRamp": [
+          "oklch(15.0% 0.042 256)",
+          "oklch(27.0% 0.076 256)",
+          "oklch(39.0% 0.110 256)",
+          "oklch(51.0% 0.135 256)",
+          "oklch(63.0% 0.135 256)",
+          "oklch(75.0% 0.126 256)",
+          "oklch(86.0% 0.096 256)",
+          "oklch(95.0% 0.070 256)"
+        ]
+      },
+      "c4-amarillo": {
+        "role": "secondary",
+        "displayName": "Amarillo",
+        "canonical": "#E7B75A",
+        "tonalRamp": [
+          "oklch(15.0% 0.039 82)",
+          "oklch(27.0% 0.070 82)",
+          "oklch(39.0% 0.101 82)",
+          "oklch(51.0% 0.124 82)",
+          "oklch(63.0% 0.124 82)",
+          "oklch(75.0% 0.116 82)",
+          "oklch(86.0% 0.088 82)",
+          "oklch(95.0% 0.064 82)"
+        ]
+      },
+      "c5-naranja": {
+        "role": "secondary",
+        "displayName": "Naranja",
+        "canonical": "#F08A4B",
+        "tonalRamp": [
+          "oklch(15.0% 0.046 50)",
+          "oklch(27.0% 0.082 50)",
+          "oklch(39.0% 0.119 50)",
+          "oklch(51.0% 0.146 50)",
+          "oklch(63.0% 0.146 50)",
+          "oklch(75.0% 0.137 50)",
+          "oklch(86.0% 0.104 50)",
+          "oklch(95.0% 0.076 50)"
+        ]
+      },
+      "c6-rojo": {
+        "role": "secondary",
+        "displayName": "Rojo",
+        "canonical": "#DE5A55",
+        "tonalRamp": [
+          "oklch(15.0% 0.052 25)",
+          "oklch(27.0% 0.094 25)",
+          "oklch(39.0% 0.135 25)",
+          "oklch(51.0% 0.167 25)",
+          "oklch(63.0% 0.167 25)",
+          "oklch(75.0% 0.156 25)",
+          "oklch(86.0% 0.118 25)",
+          "oklch(95.0% 0.087 25)"
+        ]
+      },
+      "c7-morado": {
+        "role": "secondary",
+        "displayName": "Morado",
+        "canonical": "#9675DE",
+        "tonalRamp": [
+          "oklch(15.0% 0.048 296)",
+          "oklch(27.0% 0.087 296)",
+          "oklch(39.0% 0.126 296)",
+          "oklch(51.0% 0.155 296)",
+          "oklch(63.0% 0.155 296)",
+          "oklch(75.0% 0.145 296)",
+          "oklch(86.0% 0.109 296)",
+          "oklch(95.0% 0.081 296)"
+        ]
+      },
+      "c8-negro": {
+        "role": "secondary",
+        "displayName": "Negro",
+        "canonical": "#1E2126",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 261)",
+          "oklch(27.0% 0.006 261)",
+          "oklch(39.0% 0.009 261)",
+          "oklch(51.0% 0.010 261)",
+          "oklch(63.0% 0.010 261)",
+          "oklch(75.0% 0.010 261)",
+          "oklch(86.0% 0.007 261)",
+          "oklch(95.0% 0.005 261)"
+        ]
+      },
+      "rail-negro": {
+        "role": "neutral",
+        "displayName": "Rail Negro",
+        "canonical": "#7B828D",
+        "tonalRamp": [
+          "oklch(15.0% 0.006 259)",
+          "oklch(27.0% 0.010 259)",
+          "oklch(39.0% 0.015 259)",
+          "oklch(51.0% 0.019 259)",
+          "oklch(63.0% 0.019 259)",
+          "oklch(75.0% 0.017 259)",
+          "oklch(86.0% 0.013 259)",
+          "oklch(95.0% 0.010 259)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The opening headline only; three uppercase lines at wall scale."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "One per field, fitted by script to the column width and a share of viewport height."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Type on tape: the action strip and landmark strips."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "Tabular point values on the score sheet."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Lowercase rocodrom. with its dot; rail mark and footer."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "The one sentence under the opening headline, max 33ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "One short paragraph per field, max 34ch."
+      },
+      "tag-value": {
+        "displayName": "Tag value",
+        "purpose": "Value column of a route tag."
+      },
+      "chip": {
+        "displayName": "Chip",
+        "purpose": "Fixed top-right chips."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase term column of a tag and score-sheet group names; the size floor."
+      },
+      "hand": {
+        "displayName": "Hand",
+        "purpose": "A setter note of a few words, rotated -2deg."
+      }
+    },
+    "shadows": [
+      {
+        "name": "tag",
+        "value": "0 18px 30px -18px rgba(20, 23, 28, .55)",
+        "purpose": "A laminated tag hanging just off the wall."
+      },
+      {
+        "name": "tag-hole",
+        "value": "inset 0 2px 3px rgba(20, 23, 28, .35)",
+        "purpose": "The punched hole of a tag, showing the field colour."
+      },
+      {
+        "name": "phone",
+        "value": "0 34px 60px -30px rgba(20, 23, 28, .6), 0 0 0 1.5px rgba(244, 246, 248, .12) inset",
+        "purpose": "The device body, with a faint inner edge for the black field."
+      },
+      {
+        "name": "label",
+        "value": "0 10px 22px -10px rgba(20, 23, 28, .5)",
+        "purpose": "Legend tooltip label."
+      },
+      {
+        "name": "menu",
+        "value": "0 24px 48px -20px rgba(20, 23, 28, .6)",
+        "purpose": "Open language menu."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "The single easing for every CSS transition; GSAP entrances use the matching expo.out. No overshoot."
+      },
+      {
+        "name": "duration-fade",
+        "value": "0.2s",
+        "purpose": "Opacity of tooltip labels and the language menu."
+      },
+      {
+        "name": "duration-state",
+        "value": "0.35s",
+        "purpose": "Chip hover and colour inversion, arrow slide."
+      },
+      {
+        "name": "duration-settle",
+        "value": "0.45s",
+        "purpose": "Action tape straightening, legend square fill and scale."
+      },
+      {
+        "name": "duration-screen",
+        "value": "0.5s opacity, 0.8s transform",
+        "purpose": "Screen swap inside the pinned phone."
+      },
+      {
+        "name": "entrance-line-rise",
+        "value": "yPercent 112 to 0, 1s to 1.1s, stagger 0.08s to 0.09s, expo.out, once",
+        "purpose": "Headline lines rising out of their mask."
+      },
+      {
+        "name": "entrance-follow",
+        "value": "opacity 0 and y 18px to rest, 0.9s, stagger 0.08s, expo.out, once",
+        "purpose": "Paragraph and action following the headline."
+      },
+      {
+        "name": "entrance-tag-swing",
+        "value": "rotate -9deg and y 26px to rest, 1.2s, expo.out, once",
+        "purpose": "Route tag swinging to rest from its clip."
+      },
+      {
+        "name": "scrub-panel-cut",
+        "value": "scaleY 2.3 to 1 between top bottom and top 45%, linear scrub",
+        "purpose": "Diagonal wedge settling as a field takes the screen."
+      },
+      {
+        "name": "scrub-phone",
+        "value": "rotate 6.5deg to 0 over the first field, then lean of 1.6deg alternating per field",
+        "purpose": "The pinned phone straightening and leaning."
+      },
+      {
+        "name": "count-up",
+        "value": "0.9s power3.out, once",
+        "purpose": "Score numerals counting to their value."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transitions and animations 0.01ms; no GSAP; parade becomes a static grid",
+        "purpose": "prefers-reduced-motion behaviour."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide",
+        "value": "900px"
+      },
+      {
+        "name": "compact-phone",
+        "value": "900px to 1180px"
+      },
+      {
+        "name": "short",
+        "value": "max-height 640px at 900px and up"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Action tape",
+      "kind": "button",
+      "refersTo": "tape-action",
+      "description": "The primary action: a torn strip of gaffer tape, stuck at an angle. One per field at most.",
+      "html": "<a class=\"ds-go\" href=\"#\"><span>Unirme a la beta</span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 12h15M13 5.5 19.5 12 13 18.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ".ds-go { display: inline-flex; align-items: center; gap: 16px; background: var(--ink, #14171C); color: var(--chalk, #F4F6F8); text-decoration: none; font-family: var(--display, 'Archivo', 'Arial Narrow', sans-serif); font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 38px; letter-spacing: .03em; line-height: 1; padding: .62em 1em .52em 1.05em; rotate: -1.5deg; clip-path: polygon(0 5%, 2.5% 0, 97.5% 3%, 100% 0, 99.2% 96%, 97% 100%, 2% 96%, 0 100%); transition: rotate .45s var(--ease, cubic-bezier(.16, 1, .3, 1)), translate .45s var(--ease, cubic-bezier(.16, 1, .3, 1)); } .ds-go svg { width: .82em; height: .82em; transition: translate .35s var(--ease, cubic-bezier(.16, 1, .3, 1)); } .ds-go:hover { rotate: 0deg; translate: 0 -3px; } .ds-go:hover svg { translate: 6px 0; } .ds-go:active { translate: 0 0; } .ds-go:focus-visible { clip-path: none; outline: 3px solid var(--ink, #14171C); outline-offset: 4px; }"
+    },
+    {
+      "name": "Action tape on Negro",
+      "kind": "button",
+      "refersTo": "tape-action-on-negro",
+      "description": "The same strip inverted for the black field.",
+      "html": "<div class=\"ds-negro\"><a class=\"ds-go-inv\" href=\"#\"><span>Unirme a la beta</span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 12h15M13 5.5 19.5 12 13 18.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></div>",
+      "css": ".ds-negro { background: var(--c8, #1E2126); padding: 28px; } .ds-go-inv { display: inline-flex; align-items: center; gap: 16px; background: var(--chalk, #F4F6F8); color: var(--ink, #14171C); text-decoration: none; font-family: var(--display, 'Archivo', 'Arial Narrow', sans-serif); font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 38px; letter-spacing: .03em; line-height: 1; padding: .62em 1em .52em 1.05em; rotate: -1.5deg; clip-path: polygon(0 5%, 2.5% 0, 97.5% 3%, 100% 0, 99.2% 96%, 97% 100%, 2% 96%, 0 100%); transition: rotate .45s var(--ease, cubic-bezier(.16, 1, .3, 1)), translate .45s var(--ease, cubic-bezier(.16, 1, .3, 1)); } .ds-go-inv svg { width: .82em; height: .82em; transition: translate .35s var(--ease, cubic-bezier(.16, 1, .3, 1)); } .ds-go-inv:hover { rotate: 0deg; translate: 0 -3px; } .ds-go-inv:hover svg { translate: 6px 0; } .ds-go-inv:focus-visible { clip-path: none; outline: 3px solid var(--chalk, #F4F6F8); outline-offset: 4px; }"
+    },
+    {
+      "name": "Landmark tape",
+      "kind": "custom",
+      "refersTo": "tape-landmark",
+      "description": "Names a place on the route (SALIDA, TOP). Not a section label.",
+      "html": "<div class=\"ds-field-verde\"><span class=\"ds-tape\">Salida</span></div>",
+      "css": ".ds-field-verde { background: var(--c2, #5FBF7A); padding: 28px; } .ds-tape { display: inline-block; background: var(--ink, #14171C); color: var(--chalk, #F4F6F8); font-family: var(--display, 'Archivo', 'Arial Narrow', sans-serif); font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 26px; line-height: 1; letter-spacing: .04em; padding: 10px 22px 9px; rotate: -3deg; clip-path: polygon(0 6%, 3% 0, 97% 4%, 100% 0, 99% 96%, 96% 100%, 2% 95%, 0 100%); }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Fixed top-right laminate pills: the language picker and the short action.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" type=\"button\">ES <svg viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"M2 4.2 6 8l4-3.8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><a class=\"ds-chip\" href=\"#\">Beta para iPhone</a></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; } .ds-chip { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--ink, #14171C); color: var(--chalk, #F4F6F8); font-family: var(--text, 'Archivo', system-ui, sans-serif); font-size: 14px; font-weight: 700; letter-spacing: .02em; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color .35s var(--ease, cubic-bezier(.16, 1, .3, 1)), color .35s var(--ease, cubic-bezier(.16, 1, .3, 1)), transform .35s var(--ease, cubic-bezier(.16, 1, .3, 1)); } .ds-chip svg { width: 11px; height: 11px; } .ds-chip:hover { transform: translateY(-2px); } .ds-chip:active { transform: translateY(0); } .ds-chip:focus-visible { outline: 3px solid var(--ink, #14171C); outline-offset: 4px; }"
+    },
+    {
+      "name": "Route tag",
+      "kind": "card",
+      "refersTo": "route-tag",
+      "description": "Laminated card clipped to the start hold; term and value rows for the rules of one move, closed by an optional hand note.",
+      "html": "<div class=\"ds-field-azul\"><div class=\"ds-tag\"><dl><div><dt>Vidas</dt><dd>2 por reto, para todos</dd></div><div><dt>Vídeo</dt><dd>Hasta 1:30 por intento</dd></div><div><dt>Margen</dt><dd>10 s para cancelar sin gastar vida</dd></div></dl><p class=\"ds-hand\">aquí nadie hace trampa</p></div></div>",
+      "css": ".ds-field-azul { background: var(--c3, #4F8AD9); padding: 44px 28px 32px; } .ds-tag { position: relative; display: inline-block; background: var(--chalk, #F4F6F8); color: var(--ink, #14171C); border-radius: 12px; padding: 20px 26px 20px 58px; min-width: 320px; max-width: 460px; rotate: 1.5deg; transform-origin: 30px 30px; box-shadow: 0 18px 30px -18px rgba(20, 23, 28, .55); font-family: var(--text, 'Archivo', system-ui, sans-serif); } .ds-tag::before { content: ''; position: absolute; left: 20px; top: 20px; width: 18px; height: 18px; border-radius: 50%; background: var(--c3, #4F8AD9); box-shadow: inset 0 2px 3px rgba(20, 23, 28, .35); } .ds-tag::after { content: ''; position: absolute; left: 25px; top: -20px; width: 8px; height: 42px; border-radius: 4px; background: var(--ink, #14171C); rotate: 7deg; transform-origin: 50% 100%; } .ds-tag dl { margin: 0; } .ds-tag dl > div { display: grid; grid-template-columns: minmax(84px, auto) 1fr; gap: 14px; align-items: baseline; padding: 9px 0; } .ds-tag dl > div + div { border-top: 1.5px solid rgba(20, 23, 28, .16); } .ds-tag dt { font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-stretch: 88%; } .ds-tag dd { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.38; } .ds-hand { font-family: var(--hand, 'Shantell Sans', cursive); font-weight: 700; font-size: 20px; line-height: 1.32; margin: 10px 0 0; rotate: -2deg; transform-origin: 0 50%; }"
+    },
+    {
+      "name": "Score row",
+      "kind": "custom",
+      "description": "Score sheet: a group label, then rows of a name and a tabular numeral on a 2px ink rule.",
+      "html": "<div class=\"ds-field-amarillo\"><div class=\"ds-score\"><h3>Escalando</h3><ul><li><span>Presentarte</span><b>+10</b></li><li><span>Flash: el top vale</span><b>×1,5</b></li></ul></div></div>",
+      "css": ".ds-field-amarillo { background: var(--c4, #E7B75A); color: var(--ink, #14171C); padding: 28px; } .ds-score { max-width: 520px; font-family: var(--text, 'Archivo', system-ui, sans-serif); } .ds-score h3 { font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-stretch: 88%; margin: 0 0 4px; } .ds-score ul { list-style: none; margin: 0; padding: 0; } .ds-score li { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; padding: 8px 0 6px; border-bottom: 2px solid var(--ink, #14171C); } .ds-score li span { font-size: 18px; font-weight: 550; } .ds-score li b { font-family: var(--display, 'Archivo', 'Arial Narrow', sans-serif); font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 52px; line-height: .9; font-variant-numeric: tabular-nums; white-space: nowrap; }"
+    },
+    {
+      "name": "Legend rail",
+      "kind": "nav",
+      "refersTo": "legend-rail",
+      "description": "Fixed ink rail of eight circuit squares: outline until reached, filled once passed, scaled when current. Navigation and progress at once.",
+      "html": "<nav class=\"ds-rail\" aria-label=\"Circuitos\"><a href=\"#\" style=\"--sw:#F4F6F8\" class=\"ds-on\"><i></i></a><a href=\"#\" style=\"--sw:#5FBF7A\" class=\"ds-on\"><i></i></a><a href=\"#\" style=\"--sw:#4F8AD9\" class=\"ds-on ds-now\" aria-current=\"true\"><i></i></a><a href=\"#\" style=\"--sw:#E7B75A\"><i></i></a><a href=\"#\" style=\"--sw:#F08A4B\"><i></i></a><a href=\"#\" style=\"--sw:#DE5A55\"><i></i></a><a href=\"#\" style=\"--sw:#9675DE\"><i></i></a><a href=\"#\" style=\"--sw:#7B828D\"><i></i></a></nav>",
+      "css": ".ds-rail { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; width: 76px; padding: 22px 0 24px; background: var(--ink, #14171C); } .ds-rail a { display: grid; place-items: center; width: 44px; height: 34px; } .ds-rail i { width: 24px; height: 24px; border-radius: 7px; border: 2.5px solid var(--sw); background: transparent; transition: background-color .45s var(--ease, cubic-bezier(.16, 1, .3, 1)), transform .45s var(--ease, cubic-bezier(.16, 1, .3, 1)), border-radius .45s var(--ease, cubic-bezier(.16, 1, .3, 1)); } .ds-rail .ds-on i { background: var(--sw); } .ds-rail .ds-now i { transform: scale(1.34); border-radius: 8px; } .ds-rail a:hover i { background: var(--sw); } .ds-rail a:focus-visible { outline: 3px solid var(--chalk, #F4F6F8); outline-offset: 4px; border-radius: 4px; }"
+    },
+    {
+      "name": "Language menu",
+      "kind": "custom",
+      "refersTo": "language-menu",
+      "description": "Chalk popover listing the eight languages; the selected row is solid ink.",
+      "html": "<div class=\"ds-menu\" role=\"listbox\"><button type=\"button\" role=\"option\" aria-selected=\"true\">Español<span>ES</span></button><button type=\"button\" role=\"option\" aria-selected=\"false\">English<span>EN</span></button><button type=\"button\" role=\"option\" aria-selected=\"false\">Català<span>CA</span></button></div>",
+      "css": ".ds-menu { display: inline-block; min-width: 190px; background: var(--chalk, #F4F6F8); color: var(--ink, #14171C); border-radius: 12px; padding: 6px; box-shadow: 0 24px 48px -20px rgba(20, 23, 28, .6); } .ds-menu button { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 12px; border: 0; border-radius: 8px; background: none; color: inherit; font-family: var(--text, 'Archivo', system-ui, sans-serif); font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; } .ds-menu button span { font-size: 11px; font-weight: 800; letter-spacing: .1em; opacity: .55; } .ds-menu button:hover { background: rgba(20, 23, 28, .08); } .ds-menu button[aria-selected='true'] { background: var(--ink, #14171C); color: var(--chalk, #F4F6F8); } .ds-menu button[aria-selected='true'] span { opacity: .7; } .ds-menu button:focus-visible { outline: 3px solid var(--ink, #14171C); outline-offset: 4px; }"
+    },
+    {
+      "name": "Field headline",
+      "kind": "custom",
+      "description": "Wall-scale headline on a colour field with its one-paragraph caption; the base unit of every field.",
+      "html": "<div class=\"ds-field-rojo\"><h2 class=\"ds-shout\"><span>El árbitro</span><span>es tu grupo.</span></h2><p class=\"ds-body\">Todo el grupo recibe el aviso, ve el vídeo y vota.</p></div>",
+      "css": ".ds-field-rojo { background: var(--c6, #DE5A55); color: var(--ink, #14171C); padding: 36px 28px; } .ds-shout { margin: 0; font-family: var(--display, 'Archivo', 'Arial Narrow', sans-serif); font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 76px; line-height: .88; letter-spacing: -.005em; } .ds-shout span { display: block; white-space: nowrap; } .ds-body { max-width: 34ch; margin: 24px 0 0; font-family: var(--text, 'Archivo', system-ui, sans-serif); font-size: 19px; font-weight: 450; line-height: 1.45; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Circuitos",
+    "overview": "The page is one gym circuit. Eight full-bleed colour fields run from white to black, the same order a climber reads the grades on the wall, and each field carries one move of the game. Everything on a field is printed in a single ink; the only paper is chalk white, and it appears as an object hung on the wall (a laminated tag, a label, a menu), never as a tint. Colour does the dramatic work that shadows, gradients and illustration do elsewhere.\n\nThe objects are gym objects. Route tags are laminated cards clipped to a hold. Actions and landmarks are strips of gaffer tape with torn ends. A fixed ink rail on the left is the circuit legend, eight squares that fill as the reader climbs. One phone stays pinned on the right while the fields change behind it and its screen swaps to the real app screen for each move. Type is a condensed black grotesque at wall scale, set against very small tag labels, with a marker hand reserved for setter notes. Fields meet on a slight diagonal, like the facets of a wall.\n\nMotion is calm and directional: lines rise out of a mask, tags swing to rest from their clip, panel cuts settle as a field takes the screen. Everything decelerates on one exponential ease-out and nothing overshoots. The system is dense with type and colour and sparse with components: there are no cards, no icon rows and no decorative imagery. The only things allowed their own colours are the real app screens and Crux.",
+    "keyCharacteristics": [
+      "Eight full-bleed colour fields in fixed order, white to black, one idea per field.",
+      "One ink on every field; chalk is paper, not paint.",
+      "Wall-scale condensed uppercase headlines fitted to the column, against 11.5px tag labels.",
+      "Things hung on the wall (tags, tape, phone) are tilted and cast a soft shadow; things printed on the wall are level and flat.",
+      "Diagonal panel cuts between fields, alternating direction.",
+      "A fixed frame (legend rail and two chips) that never moves while colour floods beneath it."
+    ],
+    "rules": [
+      {
+        "name": "The One Ink Rule",
+        "body": "Every field prints in Ink only. Emphasis comes from size, weight and width, never from a second text colour. Measured against the build, Ink holds 4.88:1 on Rojo, 5.04:1 on Morado and 5.11:1 on Azul, the three tightest fields.",
+        "section": "colors"
+      },
+      {
+        "name": "The Chalk Is Paper Rule",
+        "body": "Chalk type never sits directly on fields 2 to 7 (it measures 2.1:1 to 3.4:1 there). Chalk appears on colour only as a surface carrying ink, or as type on an ink surface such as tape.",
+        "section": "colors"
+      },
+      {
+        "name": "The Field Order Rule",
+        "body": "The eight colours appear in circuit order and each appears once. A new section does not get a new hue; it takes the next field or shares one.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Widths Rule",
+        "body": "62% width is for the wall: headlines, tape, numerals, the wordmark. Normal width is for reading. Do not set running text condensed, and do not set a headline at normal width.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fill The Panel Rule",
+        "body": "A headline is sized by its column, not by a step on a scale. Break it into lines by hand so every line is roughly the same length, then let the widest line reach the column edge.",
+        "section": "typography"
+      },
+      {
+        "name": "The Accent Clearance Rule",
+        "body": "At 0.88 line-height, uppercase accents collide with the line above. Every line is masked with 0.15em of headroom so accents are not clipped, and a line carrying an accented capital is set about 0.105em lower than the rhythm, rather than loosening line-height for the whole block.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hung, Not Printed Rule",
+        "body": "If an element is an object on the wall it gets a tilt and may get a shadow. If it is printed on the wall it gets neither. Tape is the exception that proves it: stuck flat, so tilted but shadowless.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do give each new idea the next field in circuit order and print it in Ink (#14171C); on Negro, print in Chalk.",
+      "Do size headlines to fill their column, in hand-broken lines of similar length, uppercase, Archivo 900 at 62% width, line-height 0.88.",
+      "Do keep a field to headline, one paragraph of at most 34ch, and one object.",
+      "Do put facts in a route tag as term and value rows, and numbers that matter in Numeral style on a ruled row.",
+      "Do tilt anything hung on the wall by 1.5 to 3 degrees and alternate the direction field to field; keep printed type level.",
+      "Do use one easing for everything, cubic-bezier(.16, 1, .3, 1), and let entrances play once.",
+      "Do keep every state visible without scripts or motion: content is laid out and readable first, and animation only removes an offset.",
+      "Do show the app with real captures inside the Ink device, and Crux as the live figure."
+    ],
+    "donts": [
+      "Don't set Chalk type directly on fields 2 to 7; it fails contrast on every one of them.",
+      "Don't use a field colour as a text colour, button fill or outline on another field. The legend square and the tag hole are the only places a field colour appears off its own field.",
+      "Don't introduce a ninth hue or reorder the eight.",
+      "Don't separate fields with a horizontal edge or a rule; they meet on the diagonal.",
+      "Don't put a shadow under type, tape or a field. Shadows belong to the tag, the phone and popovers.",
+      "Don't round the ends of tape or square the corners of laminate.",
+      "Don't use bounce, overshoot or shake in any motion.",
+      "Don't set running text at 62% width, or labels below 11.5px."
+    ]
+  }
+}

@@ -50,7 +50,7 @@ The league is won against your friends, not against the wall. Points come from s
 
 - Real app screens captured from a backend-free mock build of the app (sample data, the app's own free-licensed Pexels wall photos).
 - Crux animations (`../animaciones/src`) and character sheet (`../mascota/`).
-- TestFlight public link recorded in the app repo's `testflight.md` (https://testflight.apple.com/join/g4vX44VF), pending Marc's confirmation that it is the one to publish.
+- TestFlight public link recorded in the app repo's `testflight.md` (https://testflight.apple.com/join/g4vX44VF); Marc confirmed on 2026-11-18 that it is the one to publish.
 - Absent, never to be fabricated: user counts, testimonials, press, ratings, store listings, gym partnerships.
 
 ## Product Principles

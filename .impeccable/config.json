@@ -20,6 +20,24 @@
         ],
         "createdAt": "2026-11-18T19:23:13.221Z",
         "reason": "agent: false positive. Each .field is a full-bleed colour field whose inner .wrap carries the inset (padding-inline: var(--side), a max() the static pass cannot resolve); the mascot parade bleeds off the edge on purpose."
+      },
+      {
+        "rule": "design-system-font",
+        "value": "helvetica neue",
+        "files": [
+          ".impeccable/mocks/decision/model-pick.html"
+        ],
+        "createdAt": "2026-11-18T22:13:44.317Z",
+        "reason": "agent: sanctioned exception. Unchosen first-viewport skeleton sketches from the direction round (spent hand, gitignored, never shipped); they predate DESIGN.md and use a system font as a placeholder."
+      },
+      {
+        "rule": "design-system-font",
+        "value": "helvetica neue",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-11-18T22:13:44.335Z",
+        "reason": "agent: sanctioned exception. Unchosen first-viewport skeleton sketches from the direction round (spent hand, gitignored, never shipped); they predate DESIGN.md and use a system font as a placeholder."
       }
     ]
   }
