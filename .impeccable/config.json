@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-18T19:23:13.186Z",
+        "reason": "agent: false positive. Computed line-height measured in the browser is 1.45 (.body) and 1.4 (.lead); the static pass resolves the clamp() font-size at its vw value but the unitless line-height at the clamp minimum (both off by the same 0.889 factor). Display headlines are one line per block by design."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-18T19:23:13.221Z",
+        "reason": "agent: false positive. Each .field is a full-bleed colour field whose inner .wrap carries the inset (padding-inline: var(--side), a max() the static pass cannot resolve); the mascot parade bleeds off the edge on purpose."
+      }
+    ]
+  }
+}

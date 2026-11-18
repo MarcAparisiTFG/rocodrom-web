@@ -1,0 +1,6 @@
+# GitHub Pages: publish the site only, not the working documents.
+exclude:
+  - PRODUCT.md
+  - DESIGN.md
+  - README.md
+  - "assets/img/*.json"
